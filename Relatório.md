@@ -24,7 +24,8 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 ## Aplicações semelhantes
 - Não tem, a nossa idéia é única e inovadora.
 
-# 4. Versão preliminar com pelo menos 3 guiões de teste
+
+# 4. Versão preliminar com pelo menos 3 guiões de teste (Em discussão)
 -----------------------------------------------------------
 
 
@@ -36,7 +37,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 ## Caso de utilização 3
 - Mapa de conversas
 
-# 6. Plano de trabalho
+# 6. Plano de trabalho (Em discussão)
 ----------------------------------------------------------------
 
 # 7. Project Charter e WBS
@@ -76,5 +77,16 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 - Plataforma móvel escolhida (iOS/Android)
 
 # WBS (Work BreakDown Strucutre)
-- O WBS do projeto foi elaborado no Figma e pode ser consultado no link abaixo:
-https://calm-sheep-51083484.figma.site/
+#### O WBS do projeto foi elaborado no Figma e publicado em formato de site e pode ser consultado no link abaixo:
+- https://calm-sheep-51083484.figma.site/
+
+# 8. Requisitos funcionais e não funcionais
+### 8.1 Requisitos funcionais
+- Tradução em tempo real
+- Seleção de idiomas
+- Histórico de chats
+- Agente contextual
+- Intercace de usuário amigável
+- Notificações e alertas
+
+### 8.2 Requisitos não funcionais (Em discussão)
