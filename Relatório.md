@@ -78,7 +78,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 
 ## WBS (Work BreakDown Strucutre)
 #### O WBS do projeto foi elaborado no Figma e publicado em formato de site e pode ser consultado no link abaixo:
-- https://calm-sheep-51083484.figma.site/
+- https://paper-framer-18782285.figma.site/
 
 ## 8. Requisitos funcionais e não funcionais
 ### 8.1 Requisitos funcionais
