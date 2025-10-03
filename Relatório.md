@@ -38,9 +38,9 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 - Mapa de conversas
 
 ## 6. Plano de trabalho (Em discussão)
-### Backend: 
-### Frontend:
-### Relatório:
+#### Backend: 
+#### Frontend:
+#### Relatório:
 
 ## 7. Project Charter e WBS
 
