@@ -21,8 +21,8 @@ A nossa proposta é o desenvolvimento de uma aplicação inovadora que permite c
 
 De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultrapassar barreiras linguísticas em situações práticas e utilitárias.
 
-### Aplicações semelhantes (Em discussão)
---------------------------------------------------------------
+### Aplicações semelhantes:
+- Não encontramos alguma aplicação semelhante ao nosso projeto.
 
 
 ## 4. Versão preliminar com pelo menos 3 guiões de teste (Em discussão)
@@ -38,7 +38,9 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 - Mapa de conversas
 
 ## 6. Plano de trabalho (Em discussão)
-----------------------------------------------------------------
+### Backend: 
+### Frontend:
+### Relatório:
 
 ## 7. Project Charter e WBS
 
@@ -89,7 +91,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 - Intercace de usuário amigável
 - Notificações e alertas
 
-### 8.2 Requisitos não funcionais (Em discussão)
+### 8.2 Requisitos não funcionais
 
 #### Desempenho
 - A tradução em tempo real deve ocorrer com latência mínima
@@ -121,6 +123,3 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 ## 12. Poster da Aplicação (Em discussão)
 ### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo: 
 - lorem ipsum
-
-## 13. Vídeo Promocional 
-### Siga o Link abaixo para acessar ao vídeo promocional
