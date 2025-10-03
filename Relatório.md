@@ -37,10 +37,13 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 ### Caso de utilização 3
 - Mapa de conversas
 
-## 6. Plano de trabalho (Em discussão)
-#### Backend: 
-#### Frontend:
-#### Relatório:
+## 6. Plano de trabalho
+#### Backend
+- Henrique, Joshua
+#### Frontend
+- Carlos
+#### Relatório
+- Joshua, Carlos, Henrique
 
 ## 7. Project Charter e WBS
 
@@ -118,7 +121,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 
 ## 11. Planificação (Gráfico de gantt) (Em Discussão)
 #### A planificação do projeto foi elaborado no ClickUp e pode ser consultado no link abaixo:
-- lorem ipsum
+- 
   
 ## 12. Poster da Aplicação (Em discussão)
 ### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo: 
