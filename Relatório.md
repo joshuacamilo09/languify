@@ -121,7 +121,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 
 ## 11. Planificação (Gráfico de gantt) 
 #### A planificação do projeto foi elaborado no ClickUp e pode ser consultado no link abaixo:
-- https://app.clickup.com/90151678051/v/li/901515677283
+- https://sharing.clickup.com/90151678051/g/h/2kyqaw33-615/eae2709196bb020
   
 ## 12. Poster da Aplicação (Em discussão)
 ### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo: 
