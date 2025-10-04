@@ -26,7 +26,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 
 
 ## 4. Versão preliminar com pelo menos 3 guiões de teste (Em discussão)
------------------------------------------------------------
+-----------------------------------------------------------------------
 
 
 ## 5. Casos de utilização
@@ -119,9 +119,9 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 #### Os Mockups e interfaces do projeto foram elaborados no Figma e publicado em formato de site e pode ser consultado no link abaixo:
 - lorem ipsum
 
-## 11. Planificação (Gráfico de gantt) (Em Discussão)
+## 11. Planificação (Gráfico de gantt) 
 #### A planificação do projeto foi elaborado no ClickUp e pode ser consultado no link abaixo:
-- 
+- https://app.clickup.com/90151678051/v/li/901515677283
   
 ## 12. Poster da Aplicação (Em discussão)
 ### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo: 
