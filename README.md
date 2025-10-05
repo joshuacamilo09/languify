@@ -1,2 +1,2 @@
 # LanguifY-App
-Todo contéudo das entregas estará disponibilizado aqui, qualquer alteração o grupo todo deve ser contactado para a tomada de decisão, após estiver tudo pronto iremos apenas transportar tudo para o repositorio do iade (acho eu)
+O Languidfy App é uma aplicação mobile voltada para conversação e tradução em tempo real, permitindo que utilizadores comuniquem-se em diferentes idiomas de forma simples e intuitiva. Além da tradução instantânea por voz e texto, a aplicação incorpora recursos complementares como histórico de conversas, mapa interativo e apoio contextual, oferecendo uma experiência diferenciada para turistas, residentes estrangeiros e profissionais em mobilidade internacional.
