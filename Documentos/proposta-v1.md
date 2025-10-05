@@ -48,7 +48,7 @@ Atualmente, **não existe uma aplicação que una tradução em tempo real, inte
 
 ---
 
-## 4. Versão Preliminar (Guiões de Teste – em discussão)
+## 4. Versão Preliminar (Guiões de Teste)
 
 ### Guião 1 — Core: Traduzir fala em tempo real
 
@@ -223,7 +223,7 @@ O modelo de domínio foi elaborado no Figma e está disponível em:
 
 ---
 
-## 10. Mockups e Interface (em discussão)
+## 10. Mockups e Interface
 
 Os mockups da interface foram criados no Figma e podem ser consultados em:
 🔗 [https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1](https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1)
@@ -237,7 +237,7 @@ A planificação do projeto foi desenvolvida no ClickUp e pode ser consultada em
 
 ---
 
-## 12. Poster da Aplicação (em discussão)
+## 12. Poster da Aplicação
 
 O poster foi elaborado no Figma e será disponibilizado em breve:
 🔗 [https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1](https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1)
