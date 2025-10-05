@@ -25,8 +25,8 @@ Vivemos numa era globalizada, em que viajar, estudar e trabalhar no estrangeiro 
 Existem diversas aplicações de tradução, mas a maioria **não oferece uma experiência de conversação natural**, com **voz e contexto em tempo real**.
 O **Languify** surge para preencher essa lacuna, combinando:
 
-* **Utilidade imediata:** tradução instantânea da fala.
-* **Experiência enriquecida:** histórico de conversas, mapa interativo e agente contextual inteligente.
+- **Utilidade imediata:** tradução instantânea da fala.
+- **Experiência enriquecida:** histórico de conversas, mapa interativo e agente contextual inteligente.
 
 ### Objetivos
 
@@ -36,9 +36,9 @@ Facilitar a comunicação entre pessoas de diferentes nacionalidades de forma **
 
 O Languify destina-se principalmente a:
 
-* **Turistas** que visitam países cuja língua não dominam.
-* **Residentes estrangeiros** que necessitam comunicar no dia-a-dia.
-* **Profissionais internacionais** que participam em reuniões, conferências ou viagens de trabalho.
+- **Turistas** que visitam países cuja língua não dominam.
+- **Residentes estrangeiros** que necessitam comunicar no dia-a-dia.
+- **Profissionais internacionais** que participam em reuniões, conferências ou viagens de trabalho.
 
 De modo geral, a aplicação é voltada para **qualquer utilizador que deseje ultrapassar barreiras linguísticas** em situações práticas e quotidianas.
 
@@ -65,10 +65,10 @@ Atualmente, **não existe uma aplicação que una tradução em tempo real, inte
 
 **Resultado esperado**
 
-* A transcrição aparece quase em tempo real.
-* A tradução surge em texto no idioma-alvo.
-* O áudio TTS da tradução é reproduzido.
-* A conversa é registada no histórico com data, idiomas e (se autorizado) localização.
+- A transcrição aparece quase em tempo real.
+- A tradução surge em texto no idioma-alvo.
+- O áudio TTS da tradução é reproduzido.
+- A conversa é registada no histórico com data, idiomas e (se autorizado) localização.
 
 ---
 
@@ -86,9 +86,9 @@ Atualmente, **não existe uma aplicação que una tradução em tempo real, inte
 
 **Resultado esperado**
 
-* A lista carrega rapidamente e mantém ordenação por data.
-* O detalhe mostra texto original e traduzido de forma legível.
-* Existe ação para voltar à lista sem perda de posição.
+- A lista carrega rapidamente e mantém ordenação por data.
+- O detalhe mostra texto original e traduzido de forma legível.
+- Existe ação para voltar à lista sem perda de posição.
 
 ---
 
@@ -107,10 +107,10 @@ Atualmente, **não existe uma aplicação que una tradução em tempo real, inte
 
 **Resultado esperado**
 
-* Pins exibidos nas posições corretas.
-* Cartão aparece com resumo consistente.
-* Ao abrir, o app navega para o detalhe da conversa no histórico.
-* Retorno ao mapa preserva o zoom/posição anterior.
+- Pins exibidos nas posições corretas.
+- Cartão aparece com resumo consistente.
+- Ao abrir, o app navega para o detalhe da conversa no histórico.
+- Retorno ao mapa preserva o zoom/posição anterior.
 
 ---
 
@@ -142,37 +142,37 @@ Desenvolver uma aplicação móvel capaz de **traduzir fala em tempo real**, **r
 
 ### Escopo
 
-* Tradução de voz em tempo real (texto e áudio).
-* Registro de histórico de conversas com metadados (data, localização, idiomas).
-* Visualização das conversas num mapa global.
-* Agente contextual com sugestões linguísticas e culturais.
+- Tradução de voz em tempo real (texto e áudio).
+- Registro de histórico de conversas com metadados (data, localização, idiomas).
+- Visualização das conversas num mapa global.
+- Agente contextual com sugestões linguísticas e culturais.
 
 ### Stakeholders
 
-* **Equipa de Desenvolvimento:** Joshua Camilo, Henrique Krausse, Carlos Lima
-* **Utilizadores Finais:** turistas, residentes estrangeiros e profissionais internacionais
-* **Orientador:** Prof. Pedro Rosa (PDV)
+- **Equipa de Desenvolvimento:** Joshua Camilo, Henrique Krausse, Carlos Lima
+- **Utilizadores Finais:** turistas, residentes estrangeiros e profissionais internacionais
+- **Orientador:** Prof. Pedro Rosa (PDV)
 
 ### Principais Entregáveis
 
-* Aplicação funcional de tradução em tempo real
-* Histórico de chats com metadados
-* Mapa de conversas interativo
-* Agente contextual
-* Relatório final e documentação técnica
-* Poster promocional da aplicação
-* Vídeo demonstrativo (máx. 2 minutos)
+- Aplicação funcional de tradução em tempo real
+- Histórico de chats com metadados
+- Mapa de conversas interativo
+- Agente contextual
+- Relatório final e documentação técnica
+- Poster promocional da aplicação
+- Vídeo demonstrativo (máx. 2 minutos)
 
 ### Riscos
 
-* Limitações na precisão da tradução automática
-* Dependência de conexão estável à internet
+- Limitações na precisão da tradução automática
+- Dependência de conexão estável à internet
 
 ### Restrições
 
-* Primeira entrega: **28 de setembro de 2025**
-* Duração máxima do vídeo: **2 minutos**
-* Plataforma-alvo: **Android**
+- Primeira entrega: **28 de setembro de 2025**
+- Duração máxima do vídeo: **2 minutos**
+- Plataforma-alvo: **Android**
 
 ### WBS (Work Breakdown Structure)
 
@@ -185,12 +185,12 @@ O WBS do projeto foi desenvolvido no Figma e está disponível em:
 
 ### 8.1 Funcionais
 
-* Tradução em tempo real
-* Seleção de idiomas
-* Histórico de conversas
-* Agente contextual
-* Interface intuitiva
-* Notificações e alertas
+- Tradução em tempo real
+- Seleção de idiomas
+- Histórico de conversas
+- Agente contextual
+- Interface intuitiva
+- Notificações e alertas
 
 ### 8.2 Não Funcionais
 
@@ -202,8 +202,8 @@ Aplicação destinada a **dispositivos móveis Android**.
 
 **Segurança e Privacidade:**
 
-* Armazenamento seguro de dados (histórico, localização, preferências).
-* Possibilidade de o utilizador **desativar a recolha de localização**.
+- Armazenamento seguro de dados (histórico, localização, preferências).
+- Possibilidade de o utilizador **desativar a recolha de localização**.
 
 **Confiabilidade:**
 A aplicação deve funcionar mesmo com **conexão instável**, utilizando cache temporário.
