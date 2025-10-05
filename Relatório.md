@@ -1,128 +1,243 @@
-## 1. Proposta inicial do projeto
-A nossa proposta é o desenvolvimento de uma aplicação inovadora que permite conversação e tradução em tempo real.
+# Relatório de Projeto – **Languify**
+
+## 1. Proposta Inicial
+
+O projeto propõe o desenvolvimento de uma aplicação móvel inovadora que permite **conversação e tradução em tempo real**, promovendo a comunicação natural entre pessoas de diferentes idiomas.
+
+---
 
 ## 2. Nome do Projeto
-- Languify
+
+**Languify**
+
+---
 
 ## 3. Enquadramento do Projeto
-### Idéia:
-- O utilizador fala na sua língua nativa, e a aplicação traduz automaticamente a fala para a língua alvo escolhida.
+
+### Ideia
+
+O utilizador fala na sua língua nativa e a aplicação traduz automaticamente a fala para o idioma-alvo selecionado, permitindo uma comunicação fluida e imediata.
+
 ### Contexto
-- Vivemos numa era de globalização, onde viajar, estudar e trabalhar no estrangeiro é cada vez mais comum. As barreiras linguísticas continuam a ser um desafio diário. Aplicações de tradução já existem, mas muitas não oferecem conversação natural em tempo real com voz e integração de contexto. A nossa aplicação procura preencher esta lacuna, combinando: Utilidade imediata (traduzir no momento da fala) + Experiência enriquecida (registos de chats, mapa das conversas, agente contextual).
+
+Vivemos numa era globalizada, em que viajar, estudar e trabalhar no estrangeiro é cada vez mais comum. Apesar dos avanços tecnológicos, **as barreiras linguísticas** continuam a dificultar a comunicação entre culturas.
+
+Existem diversas aplicações de tradução, mas a maioria **não oferece uma experiência de conversação natural**, com **voz e contexto em tempo real**.
+O **Languify** surge para preencher essa lacuna, combinando:
+
+* **Utilidade imediata:** tradução instantânea da fala.
+* **Experiência enriquecida:** histórico de conversas, mapa interativo e agente contextual inteligente.
 
 ### Objetivos
--  O objectivo é facilitar a comunicação entre pessoas de diferentes nacionalidades, de forma rápida e intuitiva.
 
-### Público-alvo
-#### O público-alvo desta aplicação são principalmente:
-- Turistas que viajam para países onde não dominam a língua local.
-- Estrangeiros residentes que precisam de comunicar no dia-a-dia, mas não dominam totalmente a língua.
-- Profissionais em mobilidade internacional que participam em reuniões, conferências ou visitas a clientes noutros países.
+Facilitar a comunicação entre pessoas de diferentes nacionalidades de forma **rápida, natural e intuitiva**.
 
-De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultrapassar barreiras linguísticas em situações práticas e utilitárias.
+### Público-Alvo
 
-### Aplicações semelhantes:
-- Não encontramos alguma aplicação semelhante ao nosso projeto.
+O Languify destina-se principalmente a:
 
+* **Turistas** que visitam países cuja língua não dominam.
+* **Residentes estrangeiros** que necessitam comunicar no dia-a-dia.
+* **Profissionais internacionais** que participam em reuniões, conferências ou viagens de trabalho.
 
-## 4. Versão preliminar com pelo menos 3 guiões de teste (Em discussão)
------------------------------------------------------------------------
+De modo geral, a aplicação é voltada para **qualquer utilizador que deseje ultrapassar barreiras linguísticas** em situações práticas e quotidianas.
 
+### Aplicações Semelhantes
 
-## 5. Casos de utilização
-### Caso Core
-- Tradução em tempo real
-### Caso de utilização 2
-- Histórico de chat
-### Caso de utilização 3
-- Mapa de conversas
+Atualmente, **não existe uma aplicação que una tradução em tempo real, interação por voz e contexto conversacional** da forma que o Languify propõe.
 
-## 6. Plano de trabalho
-#### Backend
-- Henrique, Joshua
-#### Frontend
-- Carlos
-#### Relatório
-- Joshua, Carlos, Henrique
+---
+
+## 4. Versão Preliminar (Guiões de Teste – em discussão)
+
+### Guião 1 — Core: Traduzir fala em tempo real
+
+**Objetivo:** traduzir a fala do utilizador e reproduzir em texto e voz.
+**Pré-condições:** app instalada; microfone autorizado; internet ativa; idiomas origem/alvo definidos.
+
+**Passos**
+
+1. Abrir a aplicação.
+2. Ver o ecrã inicial (mapa com pins).
+3. Tocar no botão “Falar” (ou segurar, conforme UI).
+4. Dizer uma frase na língua de origem.
+5. Soltar o botão/encerrar captação.
+
+**Resultado esperado**
+
+* A transcrição aparece quase em tempo real.
+* A tradução surge em texto no idioma-alvo.
+* O áudio TTS da tradução é reproduzido.
+* A conversa é registada no histórico com data, idiomas e (se autorizado) localização.
+
+---
+
+### Guião 2 — Consultar histórico de transcrições
+
+**Objetivo:** rever conversas anteriores em lista minimalista.
+**Pré-condições:** existir pelo menos uma conversa guardada.
+
+**Passos**
+
+1. No ecrã inicial, tocar no botão “Histórico” no footer.
+2. Ver a lista de conversas (últimas no topo), com metadados mínimos (data, línguas, local opcional).
+3. Tocar numa conversa.
+4. Ler transcrição original e tradução; navegar entre mensagens se houver várias.
+
+**Resultado esperado**
+
+* A lista carrega rapidamente e mantém ordenação por data.
+* O detalhe mostra texto original e traduzido de forma legível.
+* Existe ação para voltar à lista sem perda de posição.
+
+---
+
+### Guião 3 — Ver conversas no mapa
+
+**Objetivo:** localizar visualmente conversas passadas.
+**Pré-condições:** localização permitida em conversas anteriores ou geotags salvas.
+
+**Passos**
+
+1. No ecrã inicial (mapa), visualizar pins correspondentes a conversas.
+2. Fazer zoom/arrastar o mapa para explorar diferentes regiões.
+3. Tocar num pin.
+4. Ver um cartão/resumo com data, línguas e excerto.
+5. Tocar em “Abrir conversa” no cartão.
+
+**Resultado esperado**
+
+* Pins exibidos nas posições corretas.
+* Cartão aparece com resumo consistente.
+* Ao abrir, o app navega para o detalhe da conversa no histórico.
+* Retorno ao mapa preserva o zoom/posição anterior.
+
+---
+
+## 5. Casos de Utilização
+
+1. **Tradução em tempo real** (caso principal)
+2. **Histórico de conversas**
+3. **Mapa interativo de conversas**
+
+---
+
+## 6. Plano de Trabalho
+
+**Backend:** Henrique Krause, Joshua Camilo, Carlos Lima
+**Frontend:** Henrique Krause, Joshua Camilo, Carlos Lima
+**Relatório:** Henrique Krause, Joshua Camilo, Carlos Lima
+
+---
 
 ## 7. Project Charter e WBS
 
-### Nome do Projeto:
-- Conversão + Tradução em tempo real
-### Objetivo do Projeto:
-- Desenvolver uma aplicação móvel capaz de traduzir a fala em tempo real, registrar interações e fornecer contexto adicional para facilitar a comunicação entre pessoas de diferentes idiomas.
+### Nome do Projeto
 
-### Escopo do Projeto
-- Tradução de voz em tempo real para texto ou áudio.
-- Registro de histórico de conversas com metadados (data, localização, línguas usadas).
-- Visualização das conversas em um mapa global.
-- Assistente contextual que sugere traduções e fornece informações culturais.
+**Conversação + Tradução em Tempo Real**
 
-### StakeHolders:
-- Equipa de Desenvolvimento: Joshua Camilo, Henrique Krausse, Carlos Lima
-- Usuário Finais: Turistas, estrangeiros residentes, profissionais em mobilidade internacional
-- Professores/orientadores do Projeto: Prof de PDV (Pedro Rosa)
+### Objetivo do Projeto
 
-### Principais Entregáveis:
-- Aplicação funcional de tradução em tempo real
-- Histórico de chats com metadados
-- Mapa de conversas
-- Assistente contextual
-- Relatório final e documentação técnica
-- Poster da aplicação
-- Vídeo promocional
+Desenvolver uma aplicação móvel capaz de **traduzir fala em tempo real**, **registar interações** e **fornecer contexto adicional**, facilitando a comunicação entre falantes de diferentes línguas.
 
-### Riscos:
-- Possíveis problemas de precisão na tradução
-- Limitações de conexão a internet para tradução
+### Escopo
 
-### Restrições:
-- Prazo da primeira entrega: domingo, 28/09/2025
-- Vídeo promocional máximo de 2 minutos
-- Plataforma móvel escolhida (iOS/Android)
+* Tradução de voz em tempo real (texto e áudio).
+* Registro de histórico de conversas com metadados (data, localização, idiomas).
+* Visualização das conversas num mapa global.
+* Agente contextual com sugestões linguísticas e culturais.
 
-## WBS (Work BreakDown Strucutre)
-#### O WBS do projeto foi elaborado no Figma e publicado em formato de site e pode ser consultado no link abaixo:
-- https://paper-framer-18782285.figma.site/
+### Stakeholders
 
-## 8. Requisitos funcionais e não funcionais
-### 8.1 Requisitos funcionais
-- Tradução em tempo real
-- Seleção de idiomas
-- Histórico de chats
-- Agente contextual
-- Intercace de usuário amigável
-- Notificações e alertas
+* **Equipa de Desenvolvimento:** Joshua Camilo, Henrique Krausse, Carlos Lima
+* **Utilizadores Finais:** turistas, residentes estrangeiros e profissionais internacionais
+* **Orientador:** Prof. Pedro Rosa (PDV)
 
-### 8.2 Requisitos não funcionais
+### Principais Entregáveis
 
-#### Desempenho
-- A tradução em tempo real deve ocorrer com latência mínima
-#### Compatibilidade
-- A aplicação deve ser compatível apenas para dispositivos móveis Android
-#### Segurança e Privacidade
-- Os dados do utilizador (histórico de conversas, localização) devem ser armazenados de forma segura e confidencial.
-- Deve permitir ao utilizador desativar o registro de localização, se desejar.
-#### Confiabilidade
-- A aplicação deve funcionar mesmo com conexão instável, usando cache temporário para armazenar traduções pendentes.
-#### Usabilidade
-- Interface intuitiva, acessível a utilizadores de diferentes idades e perfis.
-- Deve suportar múltiplos idiomas na interface.
-#### Escalabilidade
-- O sistema deve ser capaz de suportar múltiplos utilizadores simultaneamente sem queda de performance.
+* Aplicação funcional de tradução em tempo real
+* Histórico de chats com metadados
+* Mapa de conversas interativo
+* Agente contextual
+* Relatório final e documentação técnica
+* Poster promocional da aplicação
+* Vídeo demonstrativo (máx. 2 minutos)
 
-## 9. Modelo de domínio
-#### O Modelo de domínio do projeto foi elaborado no Figma e publicado em formato de site e pode ser consultado no link abaixo:
-- https://calm-sheep-51083484.figma.site/
+### Riscos
 
-## 10. Mockups e Interface (Em discussão)
-#### Os Mockups e interfaces do projeto foram elaborados no Figma e publicado em formato de site e pode ser consultado no link abaixo:
-- lorem ipsum
+* Limitações na precisão da tradução automática
+* Dependência de conexão estável à internet
 
-## 11. Planificação (Gráfico de gantt)
-#### A planificação do projeto foi elaborado no ClickUp e pode ser consultado no link abaixo:
-- https://sharing.clickup.com/90151678051/g/h/2kyqaw33-615/eae2709196bb020
+### Restrições
 
-## 12. Poster da Aplicação (Em discussão)
-### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo:
-- lorem ipsum
+* Primeira entrega: **28 de setembro de 2025**
+* Duração máxima do vídeo: **2 minutos**
+* Plataforma-alvo: **Android**
+
+### WBS (Work Breakdown Structure)
+
+O WBS do projeto foi desenvolvido no Figma e está disponível em:
+🔗 [https://paper-framer-18782285.figma.site/](https://paper-framer-18782285.figma.site/)
+
+---
+
+## 8. Requisitos
+
+### 8.1 Funcionais
+
+* Tradução em tempo real
+* Seleção de idiomas
+* Histórico de conversas
+* Agente contextual
+* Interface intuitiva
+* Notificações e alertas
+
+### 8.2 Não Funcionais
+
+**Desempenho:**
+A tradução deve ocorrer com **latência mínima**.
+
+**Compatibilidade:**
+Aplicação destinada a **dispositivos móveis Android**.
+
+**Segurança e Privacidade:**
+
+* Armazenamento seguro de dados (histórico, localização, preferências).
+* Possibilidade de o utilizador **desativar a recolha de localização**.
+
+**Confiabilidade:**
+A aplicação deve funcionar mesmo com **conexão instável**, utilizando cache temporário.
+
+**Usabilidade:**
+Interface **acessível e intuitiva**, adaptada a diferentes perfis e idades, com **suporte multilíngue**.
+
+**Escalabilidade:**
+Capacidade de suportar **múltiplos utilizadores simultaneamente** sem perda de desempenho.
+
+---
+
+## 9. Modelo de Domínio
+
+O modelo de domínio foi elaborado no Figma e está disponível em:
+🔗 [https://calm-sheep-51083484.figma.site/](https://calm-sheep-51083484.figma.site/)
+
+---
+
+## 10. Mockups e Interface (em discussão)
+
+Os mockups da interface foram criados no Figma e podem ser consultados em:
+🔗 [https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1](https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1)
+
+---
+
+## 11. Planificação (Gráfico de Gantt)
+
+A planificação do projeto foi desenvolvida no ClickUp e pode ser consultada em:
+🔗 [https://sharing.clickup.com/90151678051/g/h/2kyqaw33-615/eae2709196bb020](https://sharing.clickup.com/90151678051/g/h/2kyqaw33-615/eae2709196bb020)
+
+---
+
+## 12. Poster da Aplicação (em discussão)
+
+O poster foi elaborado no Figma e será disponibilizado em breve:
+🔗 [https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1](https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1)
