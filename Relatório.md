@@ -5,9 +5,9 @@ A nossa proposta é o desenvolvimento de uma aplicação inovadora que permite c
 - Languify
 
 ## 3. Enquadramento do Projeto
-### Idéia: 
+### Idéia:
 - O utilizador fala na sua língua nativa, e a aplicação traduz automaticamente a fala para a língua alvo escolhida.
-### Contexto 
+### Contexto
 - Vivemos numa era de globalização, onde viajar, estudar e trabalhar no estrangeiro é cada vez mais comum. As barreiras linguísticas continuam a ser um desafio diário. Aplicações de tradução já existem, mas muitas não oferecem conversação natural em tempo real com voz e integração de contexto. A nossa aplicação procura preencher esta lacuna, combinando: Utilidade imediata (traduzir no momento da fala) + Experiência enriquecida (registos de chats, mapa das conversas, agente contextual).
 
 ### Objetivos
@@ -49,7 +49,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 
 ### Nome do Projeto:
 - Conversão + Tradução em tempo real
-### Objetivo do Projeto: 
+### Objetivo do Projeto:
 - Desenvolver uma aplicação móvel capaz de traduzir a fala em tempo real, registrar interações e fornecer contexto adicional para facilitar a comunicação entre pessoas de diferentes idiomas.
 
 ### Escopo do Projeto
@@ -72,11 +72,11 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 - Poster da aplicação
 - Vídeo promocional
 
-### Riscos: 
+### Riscos:
 - Possíveis problemas de precisão na tradução
 - Limitações de conexão a internet para tradução
 
-### Restrições: 
+### Restrições:
 - Prazo da primeira entrega: domingo, 28/09/2025
 - Vídeo promocional máximo de 2 minutos
 - Plataforma móvel escolhida (iOS/Android)
@@ -111,7 +111,7 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 #### Escalabilidade
 - O sistema deve ser capaz de suportar múltiplos utilizadores simultaneamente sem queda de performance.
 
-## 9. Modelo de domínio 
+## 9. Modelo de domínio
 #### O Modelo de domínio do projeto foi elaborado no Figma e publicado em formato de site e pode ser consultado no link abaixo:
 - https://calm-sheep-51083484.figma.site/
 
@@ -119,10 +119,10 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 #### Os Mockups e interfaces do projeto foram elaborados no Figma e publicado em formato de site e pode ser consultado no link abaixo:
 - lorem ipsum
 
-## 11. Planificação (Gráfico de gantt) 
+## 11. Planificação (Gráfico de gantt)
 #### A planificação do projeto foi elaborado no ClickUp e pode ser consultado no link abaixo:
 - https://sharing.clickup.com/90151678051/g/h/2kyqaw33-615/eae2709196bb020
-  
+
 ## 12. Poster da Aplicação (Em discussão)
-### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo: 
+### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo:
 - lorem ipsum
