@@ -115,14 +115,14 @@ De forma geral, a aplicação destina-se a qualquer pessoa que necessite de ultr
 #### O Modelo de domínio do projeto foi elaborado no Figma e publicado em formato de site e pode ser consultado no link abaixo:
 - https://calm-sheep-51083484.figma.site/
 
-## 10. Mockups e Interface (Em discussão)
+## 10. Mockups e Interface 
 #### Os Mockups e interfaces do projeto foram elaborados no Figma e publicado em formato de site e pode ser consultado no link abaixo:
-- lorem ipsum
+- https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1
 
 ## 11. Planificação (Gráfico de gantt)
 #### A planificação do projeto foi elaborado no ClickUp e pode ser consultado no link abaixo:
 - https://sharing.clickup.com/90151678051/g/h/2kyqaw33-615/eae2709196bb020
 
-## 12. Poster da Aplicação (Em discussão)
+## 12. Poster da Aplicação
 ### O Poster da aplicação foi elaborado no figma e pode ser consultado no limk abaixo:
-- lorem ipsum
+- https://www.figma.com/design/4QeVgYX8BKdHH4e2BxCzAs/Languify?m=auto&t=c9Xi7ZrSi3K2aGxm-1
