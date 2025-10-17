@@ -32,8 +32,7 @@ public class UserService
          User CurrentUser = getCurrentUser();
 
          if (dto.getNome() != null) CurrentUser.setNome(dto.getNome());
-         if (dto.getNative_Idiom() != null) CurrentUser.setNative_Idiom(dto.getNative_Idiom());
-         if (dto.getSettings() != null) CurrentUser.setSettings(dto.getSettings());
+         if (dto.getNative_idiom() != null) CurrentUser.setNative_idiom(dto.getNative_idiom());
 
          userRepository.save(CurrentUser);
 
@@ -41,7 +40,7 @@ public class UserService
                  .id(CurrentUser.getUser_id())
                  .nome(CurrentUser.getNome())
                  .email(CurrentUser.getEmail())
-                 .native_Idiom(CurrentUser.getNative_Idiom())
+                 .native_idiom(CurrentUser.getNative_idiom())
                  .RegisterDate(CurrentUser.getRegisterDate())
                  .build();
      }

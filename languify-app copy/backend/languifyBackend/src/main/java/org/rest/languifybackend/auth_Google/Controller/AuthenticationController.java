@@ -1,28 +1,22 @@
 package org.rest.languifybackend.auth_Google.Controller;
 
 import lombok.RequiredArgsConstructor;
-import org.rest.languifybackend.auth_Google.Model.AuthRequest;
-import org.rest.languifybackend.auth_Google.Model.AuthResponse;
-import org.rest.languifybackend.auth_Google.Model.GoogleAuthRequest;
-import org.rest.languifybackend.auth_Google.Model.RegisterRequest;
+import org.rest.languifybackend.auth_Google.Model.*;
 import org.rest.languifybackend.auth_Google.Service.AuthenticationService;
 import org.rest.languifybackend.auth_Google.oauth.GoogleAuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/languify/v1/")
+@RequestMapping("languify/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController
 {
     private final AuthenticationService authService;
     private final GoogleAuthService googleAuthService;
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate (@RequestBody AuthRequest request)
+    @PostMapping("/login/{id}")
+    public ResponseEntity<AuthResponse> authenticate (@PathVariable Long id, @RequestBody AuthRequest request)
     {
         return ResponseEntity.ok(authService.authenticate(request));
     }

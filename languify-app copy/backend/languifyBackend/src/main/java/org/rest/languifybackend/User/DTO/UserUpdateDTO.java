@@ -15,6 +15,5 @@ import org.rest.languifybackend.Settings.Model.Settings;
 public class UserUpdateDTO
 {
     private String nome;
-    private String native_Idiom;
-    private Settings settings;
+    private String native_idiom;
 }

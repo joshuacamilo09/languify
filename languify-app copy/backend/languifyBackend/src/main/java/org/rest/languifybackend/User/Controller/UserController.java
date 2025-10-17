@@ -20,22 +20,22 @@ public class UserController
     @Autowired
     private UserService userService;
 
-    @GetMapping("/MyProfile")
-    public ResponseEntity<UserDTO> getMyProfile(){
+    @GetMapping("/MyProfile/{id}")
+    public ResponseEntity<UserDTO> getMyProfile(@PathVariable Long id){
         User user = userService.getCurrentUser();
         UserDTO userDTO = UserDTO.builder()
                 .id(user.getUser_id())
                 .nome(user.getUsername())
                 .email(user.getEmail())
                 .RegisterDate(user.getRegisterDate())
-                .native_Idiom(user.getNative_Idiom())
+                .native_idiom(user.getNative_idiom())
                 .build();
 
         return ResponseEntity.ok(userDTO);
     }
 
-    @PutMapping("UpdateProfile")
-    public ResponseEntity<UserDTO>updateProfile(@RequestBody UserUpdateDTO user)
+    @PutMapping("UpdateProfile/{id}")
+    public ResponseEntity<UserDTO>updateProfile(@PathVariable Long id, @RequestBody UserUpdateDTO user)
     {
         return ResponseEntity.ok(userService.updateUser(user));
     }

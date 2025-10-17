@@ -1,6 +1,7 @@
 package org.rest.languifybackend.auth_Google.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.rest.languifybackend.User.Model.Role;
 import org.rest.languifybackend.User.Model.User;
 import org.rest.languifybackend.User.UserRepo.UserRepository;
 import org.rest.languifybackend.auth_Google.Model.AuthRequest;
@@ -29,17 +30,17 @@ public class AuthenticationService
                 .nome(Request.getName())
                 .email(Request.getEmail())
                 .password(passwordEncoder.encode(Request.getPassword()))
-                .googleId(null)
-                .native_Idiom(Request.getNative_idiom())
+                .native_idiom(Request.getNative_idiom())
                 .RegisterDate(LocalDate.now())
-                .settings(Request.getSettings())
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
 
         var token = jwtService.generateToken(user);
-
-        return AuthResponse.builder().token(token).build();
+        return AuthResponse.builder()
+                .token(token)
+                .build();
     }
 
     public AuthResponse authenticate(AuthRequest Request)

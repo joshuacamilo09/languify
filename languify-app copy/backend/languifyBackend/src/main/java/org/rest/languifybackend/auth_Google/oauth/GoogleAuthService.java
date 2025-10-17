@@ -3,7 +3,10 @@ package org.rest.languifybackend.auth_Google.oauth;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import org.apache.coyote.Request;
+import org.rest.languifybackend.User.Model.Role;
 import org.rest.languifybackend.User.Model.User;
+import org.rest.languifybackend.auth_Google.Model.RegisterRequest;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.rest.languifybackend.User.UserRepo.UserRepository;
@@ -40,7 +43,7 @@ public class GoogleAuthService
                 GoogleIdToken.Payload payload = idToken.getPayload();
 
                 String email = payload.getEmail();
-                String name = (String) payload.get("name");
+                String name = payload.get("name") != null ? (String) payload.get("name") : payload.getEmail();
                 String googleId = payload.getSubject();
 
                 var user = userRepository.findByEmail(email).orElseGet(() -> {
@@ -49,6 +52,8 @@ public class GoogleAuthService
                             .email(email)
                             .googleId(googleId)
                             .RegisterDate(java.time.LocalDate.now())
+                            .role(Role.USER)
+                            .native_idiom("English (Default)")
                             .build();
 
                     return userRepository.save(newUser);
