@@ -2,6 +2,7 @@ package org.rest.languifybackend.auth_Google.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtService
 {
-    private static final String SECRET_KEY = "5ec90b9238a7efa37706d8f38d842a3822c7cf738e693b8f07a0677dd5eb5607";
+    private static final String SECRET_KEY = "FgaBlM1EKBC0Sr1TQeXKcL7DQyMaoAtgJ8OmwYZbhvSSIXgiQAbcjpq5OiqaAmSed9G5K3c619MK9+Zadqe94A==";
 
     public String extractUsername(String token)
     {
@@ -48,17 +49,25 @@ public class JwtService
     {
         return generateToken(new HashMap<>(), userDetails);
     }
+
     public String generateToken(Map<String, Object> extraClaimsm, UserDetails userDetails)
     {
         return Jwts.builder()
                 .claims(extraClaimsm)
                 .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis() + 1000 * 60 * 20))
-                .signWith(getSigningKey())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS384)
                 .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails)
+    {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    public boolean isTokenExpired(String token)
     {
         return extractExpiration(token).before(new Date());
     }

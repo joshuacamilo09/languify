@@ -39,7 +39,7 @@ public class SecurityConfig
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("languify/v1/auth/**", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/languify/v1/auth/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/languify/v1/users").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(

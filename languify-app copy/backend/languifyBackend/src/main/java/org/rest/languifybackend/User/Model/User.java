@@ -43,13 +43,11 @@ public class User implements UserDetails
     private String googleId;
 
     @Column
-    private String native_Idiom;
+    private String native_idiom;
 
     @Column
     private LocalDate RegisterDate;
 
-    @OneToOne
-    private Settings settings;
 
     @Enumerated(EnumType.STRING)
     private Role role;

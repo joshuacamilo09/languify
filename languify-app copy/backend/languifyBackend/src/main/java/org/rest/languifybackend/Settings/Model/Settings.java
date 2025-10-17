@@ -23,7 +23,7 @@ public class Settings
     private Boolean darkMode;
 
     @OneToOne
-    private User user;
+    private User userid;
 
     @Column
     private VoiceType voiceType;
