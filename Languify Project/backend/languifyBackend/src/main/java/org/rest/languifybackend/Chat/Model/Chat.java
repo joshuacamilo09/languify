@@ -9,6 +9,7 @@ import org.rest.languifybackend.User.Model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Data
@@ -22,7 +23,7 @@ public class Chat
     private Long chat_id;
 
     @Column
-    private LocalDateTime dateTime;
+    private LocalDateTime created_at = LocalDateTime.now();
 
     @Column
     private String origin_Idiom;
@@ -31,8 +32,22 @@ public class Chat
     private String Destination_Idiom;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "user1_id",  nullable = false)
+    private User user1;
+
+    @ManyToOne
+    @JoinColumn(name = "user2_id",  nullable = false)
+    private User user2;
 
     @OneToMany
     private List<ChatRecord> chats;
+
+    @OneToOne
+    private Location location;
+
+    @OneToMany(mappedBy = "chat",  cascade = CascadeType.ALL)
+    private List<ChatRecord> messages;
+
+    @Column(nullable = false)
+    private boolean active = true;
 }
