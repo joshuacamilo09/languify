@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 
 import java.time.LocalDateTime;
 
@@ -20,12 +21,15 @@ public class ChatRecord
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String Originaltext;
 
+    @Column
     private String Translatedtext;
 
     private LocalDateTime timestamp;
 
+    @Enumerated(EnumType.STRING)
     private Direction direction;
 
     @ManyToOne
