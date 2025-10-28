@@ -8,7 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Map;
 
 @Service
-public class GeoService
+public class LocationGeoService
 {
     @Value("${geo.api.key}")
     private String apiKey;

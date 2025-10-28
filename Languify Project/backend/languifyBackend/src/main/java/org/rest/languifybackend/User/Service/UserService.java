@@ -37,7 +37,7 @@ public class UserService
          userRepository.save(CurrentUser);
 
          return UserDTO.builder()
-                 .id(CurrentUser.getUser_id())
+                 .id(CurrentUser.getUserId())
                  .nome(CurrentUser.getNome())
                  .email(CurrentUser.getEmail())
                  .native_idiom(CurrentUser.getNative_idiom())

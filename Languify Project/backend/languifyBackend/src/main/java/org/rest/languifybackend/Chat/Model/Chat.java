@@ -39,9 +39,6 @@ public class Chat
     @JoinColumn(name = "user2_id",  nullable = false)
     private User user2;
 
-    @OneToMany
-    private List<ChatRecord> chats;
-
     @OneToOne
     private Location location;
 

@@ -21,12 +21,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table (name = "User")
+@Table (name = "users")
 public class User implements UserDetails
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
     @Column
     private String nome;
@@ -46,8 +46,12 @@ public class User implements UserDetails
     private String native_idiom;
 
     @Column
-    private LocalDate RegisterDate;
-
+    private LocalDate registerDate;
+    //PARA DEFINIR AUTOMATICAMENTE A DATA REGISTRO
+    @PrePersist
+    public void prePersist() {
+        this.registerDate = LocalDate.now();
+    }
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -60,12 +64,12 @@ public class User implements UserDetails
         {
             return List.of(
                     new SimpleGrantedAuthority("ROLE_"+Role.ADMIN.getRole()),
-                    new SimpleGrantedAuthority("ROLE_"+role.USER.getRole())
+                    new SimpleGrantedAuthority("ROLE_"+Role.USER.getRole())
             );
         }
         else
         {
-            return List.of(new SimpleGrantedAuthority("ROLE_"+role.USER.getRole()));
+            return List.of(new SimpleGrantedAuthority("ROLE_"+Role.USER.getRole()));
         }
     }
 

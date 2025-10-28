@@ -1,1 +1,2 @@
-Ainda nao testei os controllers no postman, nao garanto que o esteja tudo funcional, troquei de pc e deu problema ao tentar recuperar a base de dados do outro pc, entao neste tive que alterar o port, e o postman esta a recusar
+O chat foi compilado com sucesso, falta apenas testar no postman
+
