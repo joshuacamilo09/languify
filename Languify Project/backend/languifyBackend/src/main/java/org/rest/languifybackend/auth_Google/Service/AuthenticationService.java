@@ -31,7 +31,7 @@ public class AuthenticationService
                 .email(Request.getEmail())
                 .password(passwordEncoder.encode(Request.getPassword()))
                 .native_idiom(Request.getNative_idiom())
-                .RegisterDate(LocalDate.now())
+                .registerDate(LocalDate.now())
                 .role(Role.USER)
                 .build();
 

@@ -10,13 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 //Notificao de mensagem nao lida (webSockets)
 //Enviar mensagem (webSockets)
 //----------------------//
-
-//apagar mensagem (deletechat: (chatid)
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class ChatService
     private final UserRepository userRepo;
     private final ChatRepo chatRepo;
     private final ChatRecRepo chatRecordRepo;
-    private final GeoService geoService;
+    private final LocationGeoService geoService;
 
     public Chat createOrgetChat(Long userId1, Long userId2, String userIp)
     {
@@ -35,22 +34,24 @@ public class ChatService
             return existingChat.get();
         }
         else{
-           User user1 = userRepo.findById(Long.valueOf(userId1))
+           User user1 = userRepo.findById(userId1)
                    .orElseThrow(() -> new RuntimeException("User 1 not found"));
 
-           User user2 = userRepo.findById(Long.valueOf(userId2))
+           User user2 = userRepo.findById(userId2)
                    .orElseThrow(() -> new RuntimeException("User 2 not found"));
 
            Chat chat = new Chat();
            chat.setUser1(user1);
            chat.setUser2(user2);
-           chat.getOrigin_Idiom();
+           chat.setOrigin_Idiom(user1.getNative_idiom());
            chat.setDestination_Idiom("English Default");
            chat.setCreated_at(LocalDateTime.now());
 
+           Map<String, String> loc = geoService.getLocationByIp(userIp);
            Location location = new Location();
-           location.setCountry(geoService.getCountry(userIp));
-           location.setCity(geoService.getCity(userIp));
+           location.setChat(chat);
+           location.setCountry(loc.get("Country: "));
+           location.setCity(loc.get("City: "));
 
            chat.setLocation(location);
 
@@ -60,11 +61,10 @@ public class ChatService
 
     public List<Chat> listChatsByUser(Long userId)
     {
-
-        return chatRepo.findByUser1IdOrUser2Id(userId, userId);
+        return chatRepo.findByUser1UserIdOrUser2UserId(userId, userId);
     }
 
-    public String findMessage(Long chatId, Long messageId, Long id)
+    public String findMessage(Long chatId, Long messageId)
     {
         String message = String.valueOf(chatRecordRepo.findMessageInChat(chatId, messageId));
 
@@ -98,16 +98,16 @@ public class ChatService
         Chat chat = chatRepo.findById(chatId)
                 .orElseThrow(() -> new RuntimeException("Chat not found"));
 
-        if (!chat.getUser1().getUser_id().equals(userId) && !chat.getUser2().getUser_id().equals(userId))
+        if (!chat.getUser1().getUserId().equals(userId)
+                && !chat.getUser2().getUserId().equals(userId))
         {
             throw new RuntimeException("User don´t have permission to delete this chat");
         }
         chat.setActive(false);
-
         return chatRepo.save(chat);
     }
 
     public List<Chat> listActiveChats(Long userId){
-        return chatRepo.findByUser1IdOrUser2IdAndActiveTrue(userId, userId);
+        return chatRepo.findActiveChatsByUserId(userId);
     }
 }

@@ -51,7 +51,7 @@ public class GoogleAuthService
                             .nome(name)
                             .email(email)
                             .googleId(googleId)
-                            .RegisterDate(java.time.LocalDate.now())
+                            .registerDate(java.time.LocalDate.now())
                             .role(Role.USER)
                             .native_idiom("English (Default)")
                             .build();

@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/languify/v1/user")
+@RequestMapping("/languify/user")
 public class UserController
 {
     @Autowired
@@ -24,7 +24,7 @@ public class UserController
     public ResponseEntity<UserDTO> getMyProfile(@PathVariable Long id){
         User user = userService.getCurrentUser();
         UserDTO userDTO = UserDTO.builder()
-                .id(user.getUser_id())
+                .id(user.getUserId())
                 .nome(user.getUsername())
                 .email(user.getEmail())
                 .RegisterDate(user.getRegisterDate())
