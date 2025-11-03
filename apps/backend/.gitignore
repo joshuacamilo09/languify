@@ -3,9 +3,6 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-<<<<<<< HEAD
-=======
->>>>>>> 941f10f (Update New projects)
 
 ### STS ###
 .apt_generated
@@ -38,3 +35,5 @@ build/
 ### Claude ###
 .claude
 
+### Environment ###
+.env
