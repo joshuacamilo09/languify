@@ -1,3 +1,3 @@
 package com.languify.ui.components
 
-// Map marker card composable
+// map marker card composable

@@ -1,83 +1,151 @@
 package com.languify.ui.screens.profile
 
-import android.app.Activity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.languify.R
-import com.languify.core.localization.LocaleManager
-import com.languify.ui.viewmodel.ProfileViewModel
-import com.languify.ui.viewmodel.ProfileViewModelFactory
+import androidx.navigation.NavController
+import com.languify.viewmodel.ProfileViewModel
+import kotlinx.coroutines.launch
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.delay
 
+/**
+ * Ecrã de perfil do utilizador.
+ * Mostra os dados da conta, opção de tema e idioma + logout instantâneo.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
-    val context = LocalContext.current
-    val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(context))
+fun ProfileScreen(
+    navController: NavController,
+    profileViewModel: ProfileViewModel = viewModel()
+) {
+    // Estados do ViewModel
+    val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+    val currentLanguage by profileViewModel.language.collectAsState()
 
-    // Observe current values
-    val isDarkMode by profileViewModel.darkModeEnabled.collectAsState()
-    val selectedLang by profileViewModel.selectedLanguage.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        topBar = { CenterAlignedTopAppBar(title = { Text(stringResource(R.string.profile_title)) }) }
+        topBar = { CenterAlignedTopAppBar(title = { Text("Profile") }) }
     ) { padding ->
+
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // 🔹 Dark mode toggle
-            Text(stringResource(R.string.profile_theme), style = MaterialTheme.typography.titleMedium)
-            Switch(
-                checked = isDarkMode,
-                onCheckedChange = { profileViewModel.toggleDarkMode(context, it) }
+            // Foto do perfil (ícone genérico)
+            Image(
+                painter = painterResource(android.R.drawable.ic_menu_myplaces),
+                contentDescription = "Profile picture",
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
 
-            Divider()
+            // Nome e username
+            Text(
+                text = "Alex Lima",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Text("@alexl", color = MaterialTheme.colorScheme.primary)
+            Text("alex@email.com", style = MaterialTheme.typography.bodyMedium)
 
-            // 🔹 Language selection
-            Text(stringResource(R.string.profile_language), style = MaterialTheme.typography.titleMedium)
-            LanguageDropdown(
-                selected = selectedLang,
-                onChange = { newLang ->
-                    profileViewModel.setLanguage(context, newLang)
-                    LocaleManager.setLocale(context, newLang)
-                    // Restart the activity to apply changes instantly
-                    (context as? Activity)?.recreate()
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+            )
+
+            // Alternar Dark Mode
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Dark Mode", style = MaterialTheme.typography.bodyLarge)
+                Switch(
+                    checked = isDarkMode,
+                    onCheckedChange = { profileViewModel.toggleDarkMode() }
+                )
+            }
+
+            // Selecionar Idioma
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Language", style = MaterialTheme.typography.bodyLarge)
+
+                val languages = listOf("English", "Português", "Français", "Deutsch", "中文")
+                var expanded by remember { mutableStateOf(false) }
+
+                Box {
+                    OutlinedButton(
+                        onClick = { expanded = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(currentLanguage)
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        languages.forEach { lang ->
+                            DropdownMenuItem(
+                                text = { Text(lang) },
+                                onClick = {
+                                    profileViewModel.setLanguage(lang)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
-            )
-        }
-    }
-}
+            }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun LanguageDropdown(selected: String, onChange: (String) -> Unit) {
-    val options = listOf("en", "pt", "fr", "de", "zh")
-    var expanded by remember { mutableStateOf(false) }
+            Spacer(modifier = Modifier.height(30.dp))
 
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
-        OutlinedTextField(
-            value = selected,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Language") },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier.menuAnchor()
-        )
+            // Botão de Logout instantâneo
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        // Atualiza o estado imediatamente
+                        profileViewModel.logout()
 
-        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            options.forEach { opt ->
-                DropdownMenuItem(
-                    text = { Text(opt.uppercase()) },
-                    onClick = { onChange(opt); expanded = false }
+                        //espera 200 ms para um efeito de fade-out suave
+                        delay(200)
+
+                        // Redireciona instantaneamente para o login
+                        navController.navigate("login") {
+                            popUpTo("home") { inclusive = true } // remove histórico
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text(
+                    text = "Logout",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }

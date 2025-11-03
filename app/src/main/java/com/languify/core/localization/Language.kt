@@ -1,3 +1,8 @@
 package com.languify.core.localization
 
-// Enum of supported languages
+enum class Language(val code: String) {
+    ENGLISH("en"),
+    PORTUGUESE("pt"),
+    FRENCH("fr"),
+    GERMAN("de")
+}

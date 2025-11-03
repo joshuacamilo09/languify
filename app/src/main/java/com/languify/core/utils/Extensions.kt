@@ -1,3 +1,3 @@
 package com.languify.core.utils
 
-// Extension functions
+// extension functions

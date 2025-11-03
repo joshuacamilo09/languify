@@ -1,3 +1,3 @@
 package com.languify.data.model
 
-// Translation request data object
+// translation request data object

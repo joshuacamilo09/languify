@@ -1,3 +1,3 @@
 package com.languify.data.datasource
 
-// Remote data source from network
+// remote data source from network

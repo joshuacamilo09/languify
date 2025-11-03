@@ -1,3 +1,3 @@
 package com.languify.ui.components
 
-// Mic button composable
+// mic button composable

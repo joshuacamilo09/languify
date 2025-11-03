@@ -1,3 +1,3 @@
 package com.languify.data.network
 
-// Network result sealed class
+// network result sealed class

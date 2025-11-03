@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
- * Represents a single item in the bottom navigation bar.
+ * represents a single item in the bottom navigation bar.
  */
 data class BottomNavItem(
     val route: String,          // Navigation route (used by NavHost)

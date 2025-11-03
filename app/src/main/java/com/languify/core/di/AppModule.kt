@@ -1,3 +1,3 @@
 package com.languify.core.di
 
-// Future dependency injection
+// future dependency injection

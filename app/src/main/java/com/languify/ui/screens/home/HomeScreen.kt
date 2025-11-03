@@ -8,26 +8,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.languify.R
+import com.languify.viewmodel.HomeViewModel
+import com.languify.viewmodel.HistoryViewModel
 
-/**
- * Home screen: main translation interface
- * Contains mic button, detected text, and translation.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
-    var isRecording by remember { mutableStateOf(false) } // Whether mic is active
-    var original by remember { mutableStateOf("") }        // Original text spoken
-    var translated by remember { mutableStateOf("") }      // Translated result
+fun HomeScreen(
+    homeViewModel: HomeViewModel = viewModel(),
+    historyViewModel: HistoryViewModel = viewModel()
+) {
+    val isRecording by homeViewModel.isRecording.collectAsState()
+    val translation by homeViewModel.translation.collectAsState()
 
     Scaffold(
         topBar = {
-            // Top bar with app name
-            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.app_name)) })
+            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.tab_home)) })
         }
     ) { padding ->
-        // Main layout (vertically centered)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -36,42 +35,27 @@ fun HomeScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Show spoken/original text or hint message
             Text(
-                text = if (original.isBlank()) stringResource(R.string.home_hint) else original,
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
+                text = if (isRecording) "🎙️ Listening..." else translation?.original ?: stringResource(R.string.home_hint),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium
             )
 
             Spacer(Modifier.height(24.dp))
 
-            // Display the translated text
-            Text(
-                text = translated,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary,
-                textAlign = TextAlign.Center
-            )
+            if (translation != null) {
+                Text(
+                    text = "🌍 ${translation!!.translated}",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(24.dp))
+            }
 
-            Spacer(Modifier.height(40.dp))
-
-            // Mic button simulation
             Button(
-                onClick = {
-                    // Toggle recording state
-                    isRecording = !isRecording
-
-                    // Fake example translation
-                    if (!isRecording) {
-                        original = "Olá, como estás?"
-                        translated = "Hello, how are you?"
-                    } else {
-                        original = ""
-                        translated = ""
-                    }
-                },
-                modifier = Modifier.height(56.dp),
-                shape = MaterialTheme.shapes.medium
+                onClick = { homeViewModel.toggleRecording(historyViewModel) },
+                modifier = Modifier.height(56.dp)
             ) {
                 Text(if (isRecording) stringResource(R.string.btn_stop) else stringResource(R.string.btn_speak))
             }

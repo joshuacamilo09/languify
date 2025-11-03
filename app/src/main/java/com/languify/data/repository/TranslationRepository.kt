@@ -1,3 +1,3 @@
 package com.languify.data.repository
 
-// Translation repository
+// translation repository

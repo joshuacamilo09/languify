@@ -6,7 +6,7 @@ import android.os.Build
 import java.util.*
 
 /**
- * Handles changing app language at runtime.
+ * handles changing app language at runtime.
  */
 object LocaleManager {
 

@@ -1,39 +1,75 @@
-package com.languify.ui.viewmodel
+package com.languify.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.languify.core.utils.ThemeManager
-import com.languify.core.localization.LanguageManager
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import com.languify.core.PreferencesManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel that manages both theme and language preferences.
- */
-class ProfileViewModel(context: Context) : ViewModel() {
+class ProfileViewModel(private val context: Context) : ViewModel() {
 
-    // Observes dark mode preference in real time
-    val darkModeEnabled: StateFlow<Boolean> = ThemeManager.getDarkMode(context)
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    private val prefs = PreferencesManager(context)
 
-    // Observes language preference in real time
-    val selectedLanguage: StateFlow<String> = LanguageManager.getLanguage(context)
-        .stateIn(viewModelScope, SharingStarted.Lazily, "en")
+    private val _isDarkMode = MutableStateFlow(false)
+    val isDarkMode = _isDarkMode.asStateFlow()
 
-    // Saves dark mode choice
-    fun toggleDarkMode(context: Context, enabled: Boolean) {
+    private val _language = MutableStateFlow("en")
+    val language = _language.asStateFlow()
+
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn = _isLoggedIn.asStateFlow()
+
+    init {
+        // Carrega preferências persistentes ao iniciar
+        loadPreferences()
+    }
+
+    fun loadPreferences() {
         viewModelScope.launch {
-            ThemeManager.setDarkMode(context, enabled)
+            prefs.isDarkMode.collect { _isDarkMode.value = it }
+        }
+        viewModelScope.launch {
+            prefs.language.collect { _language.value = it }
+        }
+        viewModelScope.launch {
+            prefs.isLoggedIn.collect { _isLoggedIn.value = it }
         }
     }
 
-    // Saves selected language
-    fun setLanguage(context: Context, lang: String) {
+
+    fun toggleDarkMode() {
         viewModelScope.launch {
-            LanguageManager.setLanguage(context, lang)
+            val newValue = !_isDarkMode.value
+            _isDarkMode.value = newValue
+            prefs.setDarkMode(newValue)
+        }
+    }
+
+    fun setLanguage(lang: String) {
+        viewModelScope.launch {
+            _language.value = lang
+            prefs.setLanguage(lang)
+        }
+    }
+
+    fun login(email: String, password: String) {
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            viewModelScope.launch {
+                // Atualiza localmente primeiro (resposta imediata)
+                _isLoggedIn.value = true
+
+                // Depois grava no DataStore (em background)
+                prefs.setLoggedIn(true)
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            prefs.setLoggedIn(false)
+            _isLoggedIn.value = false
         }
     }
 }

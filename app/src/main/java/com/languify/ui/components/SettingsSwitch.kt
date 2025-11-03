@@ -1,3 +1,3 @@
 package com.languify.ui.components
 
-// Settings switch composable
+// settings switch composable

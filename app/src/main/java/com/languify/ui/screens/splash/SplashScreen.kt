@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,33 +18,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.languify.R
+import com.languify.viewmodel.ProfileViewModel
 import kotlinx.coroutines.delay
-import androidx.compose.material3.Text
 
 /**
- * Simple animated splash screen that fades in and out before entering the app.
+ * SplashScreen animada — verifica se o utilizador está logado e navega
+ * para Home ou Login automaticamente, com animação de fade-in suave.
  */
 @Composable
-fun SplashScreen(navController: NavController) {
-    // Controls visibility for fade-in animation
+fun SplashScreen(navController: NavController, profileViewModel: ProfileViewModel) {
+
+    // 🔹 Estado para controlar visibilidade do fade-in
     var visible by remember { mutableStateOf(false) }
 
-    // Alpha animation (transparency)
+    // 🔹 Animação de transparência (alpha)
     val alpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(durationMillis = 1500), label = ""
+        animationSpec = tween(durationMillis = 1200), // duração mais suave
+        label = "fade-in"
     )
 
-    // When the screen launches, trigger animation and navigate after delay
+    // 🔹 Efeito colateral — inicia animação e navegação
     LaunchedEffect(Unit) {
         visible = true
-        delay(2500) // total time splash stays visible
-        navController.navigate("home") {
-            popUpTo("splash") { inclusive = true } // remove splash from backstack
+        delay(2000) // tempo total do splash
+        val isLoggedIn = profileViewModel.isLoggedIn.value
+
+        // ✅ Se logado → Home / Senão → Login
+        if (isLoggedIn) {
+            navController.navigate("home") {
+                popUpTo("splash") { inclusive = true } // remove splash da pilha
+            }
+        } else {
+            navController.navigate("login") {
+                popUpTo("splash") { inclusive = true }
+            }
         }
     }
 
-    // UI content
+    // 🔹 Interface da Splash
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -57,9 +70,10 @@ fun SplashScreen(navController: NavController) {
         ) {
             AnimatedVisibility(visible = true) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // 🔹 Logo (replace with your icon later)
+
+                    // 🟣 Logotipo (usa o teu logo principal)
                     Image(
-                        painter = painterResource(id = R.drawable.languify_logo),
+                        painter = painterResource(id = R.drawable.languify_logo), // substitui pelo teu ficheiro real
                         contentDescription = "App logo",
                         modifier = Modifier
                             .size(140.dp)
@@ -68,10 +82,10 @@ fun SplashScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 🔹 App name text
+                    // 🟣 Nome da app
                     Text(
                         text = "Languify",
-                        fontSize = 28.sp,
+                        fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.alpha(alpha)
