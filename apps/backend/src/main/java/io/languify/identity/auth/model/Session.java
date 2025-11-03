@@ -1,4 +1,4 @@
-package io.languify.identity.auth;
+package io.languify.identity.auth.model;
 
 import io.languify.identity.user.model.User;
 import lombok.Getter;
