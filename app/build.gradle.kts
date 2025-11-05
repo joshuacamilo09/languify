@@ -42,6 +42,10 @@ android {
 }
 
 dependencies {
+    //depêndencias do retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
     implementation("com.google.maps.android:maps-compose:4.2.0")
 
