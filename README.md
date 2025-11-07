@@ -9,7 +9,9 @@
 2. Configurações base	SecurityConfig, ApplicationConfig, JwtService, etc.. ->	Já está
 3. Auth (Google + JWT) ->	Já está
 4. UserController e UserService	->	Já está
-5. Chat (WebSockets)	Configurar STOMP + endpoints de chat -> Compila 100% mas não está testado
-6. TranslationService -> 	
-7. AgentContextual ->
-8. Testes e documentação ->
+5. Chat + endpoints de chat -> Já está
+6. WebSockets chat -> 
+7. TranslationService -> 	
+8. AgentContextual ->
+9. RealTime translation with AI -> 
+10. Testes e documentação ->
