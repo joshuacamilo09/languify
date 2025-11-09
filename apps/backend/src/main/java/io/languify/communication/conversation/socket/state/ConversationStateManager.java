@@ -16,17 +16,22 @@ public class ConversationStateManager {
     return Optional.ofNullable(this.states.get(userId));
   }
 
-  public boolean hasActiveConversation(String userId) {
-    return this.states.containsKey(userId);
-  }
-
   public void store(
-      String userId, Conversation conversation, Realtime realtime, WebSocketSession session) {
-    this.states.put(userId, new ConversationState(conversation, realtime, session));
+      String userId,
+      Conversation conversation,
+      Realtime realtime,
+      WebSocketSession session,
+      String fromLanguage,
+      String toLanguage) {
+    this.states.put(
+        userId, new ConversationState(conversation, realtime, session, fromLanguage, toLanguage));
   }
 
   public void remove(String userId) {
-
     this.states.remove(userId);
+  }
+
+  public boolean hasActiveConversation(String userId) {
+    return this.states.containsKey(userId);
   }
 }
