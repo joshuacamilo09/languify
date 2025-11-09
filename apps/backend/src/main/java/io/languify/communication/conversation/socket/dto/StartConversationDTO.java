@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class StartConversationDTO {
-  private String sourceLanguage;
-  private String targetLanguage;
+  private String fromLanguage;
+  private String toLanguage;
 }

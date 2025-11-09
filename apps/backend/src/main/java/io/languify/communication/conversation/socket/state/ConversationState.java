@@ -2,12 +2,16 @@ package io.languify.communication.conversation.socket.state;
 
 import io.languify.communication.conversation.model.Conversation;
 import io.languify.infra.realtime.Realtime;
+import lombok.Data;
 import org.springframework.web.socket.WebSocketSession;
 
+@Data
 public class ConversationState {
-  private Conversation conversation;
-  private Realtime realtime;
-  private WebSocketSession session;
+  private final Conversation conversation;
+  private final Realtime realtime;
+  private final WebSocketSession session;
+
+  private String targetLanguage;
 
   public ConversationState(Conversation conversation, Realtime realtime, WebSocketSession session) {
     this.conversation = conversation;
