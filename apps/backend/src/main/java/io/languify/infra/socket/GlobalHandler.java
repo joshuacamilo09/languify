@@ -1,7 +1,7 @@
 package io.languify.infra.socket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.languify.communication.conversation.socket.handler.ConversationHandler;
+import io.languify.communication.conversation.controller.websocket.ConversationHandler;
 import io.languify.infra.socket.envelopes.MessageEnvelope;
 import java.util.Objects;
 import lombok.NonNull;

@@ -1,4 +1,4 @@
-package io.languify.communication.conversation.socket.state;
+package io.languify.communication.conversation.controller.websocket;
 
 import io.languify.communication.conversation.model.Conversation;
 import io.languify.infra.realtime.Realtime;
