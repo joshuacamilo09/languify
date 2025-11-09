@@ -11,7 +11,7 @@ public class ConversationState {
   private final Realtime realtime;
   private final WebSocketSession session;
 
-  private String targetLanguage;
+  private String toLanguage;
 
   public ConversationState(Conversation conversation, Realtime realtime, WebSocketSession session) {
     this.conversation = conversation;

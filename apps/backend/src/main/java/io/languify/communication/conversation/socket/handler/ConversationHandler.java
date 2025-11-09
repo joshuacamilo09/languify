@@ -12,6 +12,7 @@ import io.languify.communication.conversation.socket.state.ConversationStateMana
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.infra.realtime.Realtime;
+import io.languify.infra.realtime.RealtimeEventHandler;
 import io.languify.infra.socket.Handler;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +86,58 @@ public class ConversationHandler extends Handler {
     Conversation conversation =
         this.service.createConversation(data.getFromLanguage(), data.getToLanguage(), s.getUser());
 
-    Realtime realtime = new Realtime(this.secret, this.uri);
+    Realtime realtime =
+        new Realtime(
+            this.secret,
+            this.uri,
+            new RealtimeEventHandler() {
+              private boolean firstAudioChunk = true;
+
+              @Override
+              public void onOriginalTranscription(String transcript) {
+                // TODO: Persist the original transcription
+              }
+
+              @Override
+              public void onTranslatedTranscription(String transcript) {
+                // TODO: Persist the translated transcription
+              }
+
+              @Override
+              public void onAudioDelta(String audioDelta) {
+                if (firstAudioChunk) {
+                  emit(
+                      "conversation:translate:state",
+                      java.util.Map.of("state", "reproducing"),
+                      userId,
+                      session);
+                  firstAudioChunk = false;
+                }
+
+                emit(
+                    "conversation:data:delta",
+                    java.util.Map.of("audio", audioDelta),
+                    userId,
+                    session);
+              }
+
+              @Override
+              public void onAudioDone() {
+                emit("conversation:data:done", null, userId, session);
+              }
+
+              @Override
+              public void onTranslationDone() {
+                emit(
+                    "conversation:translate:state",
+                    java.util.Map.of("state", "ready"),
+                    userId,
+                    session);
+
+                firstAudioChunk = true;
+              }
+            });
+
     realtime.connect(data.getFromLanguage(), data.getToLanguage());
 
     this.state.store(userId, conversation, realtime, session);
@@ -118,6 +170,9 @@ public class ConversationHandler extends Handler {
       return;
     }
 
+    this.emit(
+        "conversation:translate:state", java.util.Map.of("state", "loading"), userId, session);
+
     ConversationState state = optionalState.get();
     state.getRealtime().commitAndTranslate(data.getFromLanguage(), data.getToLanguage());
   }
@@ -125,6 +180,7 @@ public class ConversationHandler extends Handler {
   private void closeConversation(WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
     String userId = s.getUser().getId();
+
     Optional<ConversationState> optionalState = this.state.get(userId);
 
     if (optionalState.isEmpty()) {
