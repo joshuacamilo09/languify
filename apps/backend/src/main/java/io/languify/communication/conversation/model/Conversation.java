@@ -15,11 +15,13 @@ public class Conversation {
 
   private String title;
 
-  @Column(nullable = false)
-  private String sourceLanguage;
+  private String summary;
 
   @Column(nullable = false)
-  private String targetLanguage;
+  private String fromLanguage;
+
+  @Column(nullable = false)
+  private String toLanguage;
 
   @Column(nullable = false)
   private LocalDate createdAt;
