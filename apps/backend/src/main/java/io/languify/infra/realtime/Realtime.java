@@ -1,6 +1,7 @@
 package io.languify.infra.realtime;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,13 +12,17 @@ import java.util.concurrent.CompletionStage;
 public class Realtime {
   private final String REALTIME_SECRET;
   private final String REALTIME_URI;
+
+  private final RealtimeEventHandler handler;
   private final ObjectMapper mapper = new ObjectMapper();
 
   private WebSocket socket;
 
-  public Realtime(String secret, String uri) {
+  public Realtime(String secret, String uri, RealtimeEventHandler handler) {
     this.REALTIME_SECRET = secret;
     this.REALTIME_URI = uri;
+
+    this.handler = handler;
   }
 
   public void connect(String sourceLanguage, String targetLanguage) {
@@ -36,7 +41,6 @@ public class Realtime {
                 new WebSocket.Listener() {
                   @Override
                   public void onOpen(WebSocket socket) {
-                    System.out.println("Connected to OpenAI Realtime API");
                     WebSocket.Listener.super.onOpen(socket);
                     configureSession(sourceLanguage, targetLanguage);
                   }
@@ -44,41 +48,70 @@ public class Realtime {
                   @Override
                   public CompletionStage<?> onText(
                       WebSocket socket, CharSequence data, boolean last) {
-                    System.out.println("Received: " + data);
+                    try {
+                      JsonNode event = mapper.readTree(data.toString());
+                      handleEvent(event);
+                    } catch (Exception e) {
+                      System.err.println("Error parsing OpenAI event: " + e.getMessage());
+                    }
+
                     return WebSocket.Listener.super.onText(socket, data, last);
                   }
 
                   @Override
                   public CompletionStage<?> onClose(WebSocket socket, int code, String reason) {
-                    System.out.println("Closed: " + reason);
                     return WebSocket.Listener.super.onClose(socket, code, reason);
                   }
 
                   @Override
                   public void onError(WebSocket socket, Throwable error) {
-                    System.err.println("Error: " + error.getMessage());
                     WebSocket.Listener.super.onError(socket, error);
                   }
                 })
             .join();
   }
 
-  public void send(String message) {
-    this.socket.sendText(message, true);
+  private void handleEvent(JsonNode event) {
+    if (event == null || !event.has("type")) {
+      return;
+    }
+
+    String type = event.get("type").asText();
+
+    switch (type) {
+      case "conversation.item.input_audio_transcription.completed":
+        if (event.has("transcript")) {
+          this.handler.onOriginalTranscription(event.get("transcript").asText());
+        }
+
+        break;
+
+      case "response.audio_transcript.done":
+        if (event.has("transcript")) {
+          this.handler.onTranslatedTranscription(event.get("transcript").asText());
+        }
+
+        break;
+
+      case "response.audio.delta":
+        if (event.has("delta")) {
+          this.handler.onAudioDelta(event.get("delta").asText());
+        }
+
+        break;
+
+      case "response.audio.done":
+        this.handler.onAudioDone();
+        break;
+
+      case "response.done":
+        this.handler.onTranslationDone();
+        break;
+    }
   }
 
-  private Map<String, Object> getSessionConfiguration(
-      String instructions, Map<String, Object> transcription) {
-    Map<String, Object> session =
-        Map.of(
-            "modalities", new String[] {"text", "audio"},
-            "instructions", instructions,
-            "voice", "alloy",
-            "input_audio_transcription", transcription,
-            "turn_detection", null,
-            "temperature", 0.8);
-
-    return Map.of("type", "session.update", "session", session);
+  public void send(String message) {
+    this.socket.sendText(message, true);
   }
 
   private void configureSession(String sourceLanguage, String targetLanguage) {
@@ -95,6 +128,26 @@ public class Realtime {
     } catch (JsonProcessingException e) {
       System.err.println("Error creating session config: " + e.getMessage());
     }
+  }
+
+  private Map<String, Object> getSessionConfiguration(
+      String instructions, Map<String, Object> transcription) {
+    Map<String, Object> session =
+        Map.of(
+            "modalities",
+            new String[] {"text", "audio"},
+            "instructions",
+            instructions,
+            "voice",
+            "alloy",
+            "input_audio_transcription",
+            transcription,
+            "turn_detection",
+            null,
+            "temperature",
+            0.8);
+
+    return Map.of("type", "session.update", "session", session);
   }
 
   public void appendAudio(String base64Audio) {
