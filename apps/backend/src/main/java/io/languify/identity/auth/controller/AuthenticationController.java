@@ -32,7 +32,8 @@ class AuthenticationController {
   private String clientId;
 
   @PostMapping("/sign/google")
-  public ResponseEntity<SignWithGoogleResponseDTO> signGoogle(@RequestBody SignWithGoogleDTO request) {
+  public ResponseEntity<SignWithGoogleResponseDTO> signWithGoogle(
+      @RequestBody SignWithGoogleDTO request) {
     try {
       GoogleIdTokenVerifier verifier =
           new GoogleIdTokenVerifier.Builder(
@@ -53,7 +54,10 @@ class AuthenticationController {
       String familyName = (String) payload.get("family_name");
       String picture = (String) payload.get("picture");
 
-      User user = userRepository.findByEmail(email).orElseGet(() -> this.userService.createUser(email, givenName, familyName, picture));
+      User user =
+          userRepository
+              .findByEmail(email)
+              .orElseGet(() -> this.userService.createUser(email, givenName, familyName, picture));
 
       String signed = jwt.createToken(user.getId());
       return ResponseEntity.ok(new SignWithGoogleResponseDTO(signed));
