@@ -13,8 +13,13 @@ public class Conversation {
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;
 
-  @Column(nullable = false)
   private String title;
+
+  @Column(nullable = false)
+  private String sourceLanguage;
+
+  @Column(nullable = false)
+  private String targetLanguage;
 
   @Column(nullable = false)
   private LocalDate createdAt;
