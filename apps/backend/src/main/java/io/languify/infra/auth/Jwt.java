@@ -38,14 +38,14 @@ public class Jwt {
     }
   }
 
-  private Claims getClaims(String token) {
-    return Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
-  }
-
   private SecretKey getSecretKey() {
     if (this.SECRET_KEY != null) return this.SECRET_KEY;
 
     byte[] bytes = Decoders.BASE64.decode(this.JWT_SECRET);
     return Keys.hmacShaKeyFor(bytes);
+  }
+
+  private Claims getClaims(String token) {
+    return Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
   }
 }

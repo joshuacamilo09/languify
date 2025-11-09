@@ -1,35 +1,64 @@
 package io.languify.identity.auth.controller;
 
-import java.net.URI;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import io.languify.identity.auth.dto.SignWithGoogleDTO;
+import io.languify.identity.auth.dto.SignWithGoogleResponseDTO;
+import io.languify.identity.user.model.User;
+import io.languify.identity.user.repository.UserRepository;
+import io.languify.identity.user.service.UserService;
+import io.languify.infra.auth.Jwt;
+import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 class AuthenticationController {
+  private final Jwt jwt;
+
+  private final UserService userService;
+  private final UserRepository userRepository;
 
   @Value("${google.client.id}")
   private String clientId;
 
-  @Value("${google.redirect.uri}")
-  private String redirectUri;
-
   @PostMapping("/sign/google")
-  public ResponseEntity<Void> getGoogleAuthUrl() {
-    String url =
-        UriComponentsBuilder.fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
-            .queryParam("client_id", clientId)
-            .queryParam("redirect_uri", redirectUri)
-            .queryParam("response_type", "code")
-            .queryParam("scope", "openid email profile")
-            .queryParam("access_type", "offline")
-            .toUriString();
+  public ResponseEntity<SignWithGoogleResponseDTO> signGoogle(@RequestBody SignWithGoogleDTO request) {
+    try {
+      GoogleIdTokenVerifier verifier =
+          new GoogleIdTokenVerifier.Builder(
+                  new NetHttpTransport(), GsonFactory.getDefaultInstance())
+              .setAudience(Collections.singletonList(clientId))
+              .build();
 
-    return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(authUrl)).build();
+      GoogleIdToken token = verifier.verify(request.getIdToken());
+
+      if (token == null) {
+        return ResponseEntity.badRequest().build();
+      }
+
+      GoogleIdToken.Payload payload = token.getPayload();
+
+      String email = payload.getEmail();
+      String givenName = (String) payload.get("given_name");
+      String familyName = (String) payload.get("family_name");
+      String picture = (String) payload.get("picture");
+
+      User user = userRepository.findByEmail(email).orElseGet(() -> this.userService.createUser(email, givenName, familyName, picture));
+
+      String signed = jwt.createToken(user.getId());
+      return ResponseEntity.ok(new SignWithGoogleResponseDTO(signed));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
   }
 }
