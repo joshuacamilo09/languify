@@ -1,0 +1,11 @@
+name: languify
+
+services:
+  languify_mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_USER: languify
+      MYSQL_PASSWORD: languify_dev
+      MYSQL_DATABASE: languify_db
+    ports:
+      - "3306:3306"
