@@ -9,7 +9,7 @@ import io.languify.identity.auth.dto.SignWithGoogleResponseDTO;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import io.languify.identity.user.service.UserService;
-import io.languify.infra.auth.Jwt;
+import io.languify.infra.security.service.JwtService;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 class AuthenticationController {
-  private final Jwt jwt;
+  private final JwtService jwt;
 
   private final UserService userService;
   private final UserRepository userRepository;
