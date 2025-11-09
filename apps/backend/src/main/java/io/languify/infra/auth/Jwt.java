@@ -1,4 +1,4 @@
-package io.languify.infra.socket;
+package io.languify.infra.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
