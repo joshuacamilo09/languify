@@ -1,4 +1,4 @@
-package io.languify.infra.socket;
+package io.languify.infra.websocket;
 
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
@@ -22,8 +22,8 @@ public class Handshake implements HandshakeInterceptor {
   @Override
   public boolean beforeHandshake(
       ServerHttpRequest req,
-      ServerHttpResponse res,
-      WebSocketHandler handler,
+      ServerHttpResponse _res,
+      WebSocketHandler _handler,
       Map<String, Object> attrs)
       throws Exception {
     String token = req.getHeaders().getFirst("Authorization");
