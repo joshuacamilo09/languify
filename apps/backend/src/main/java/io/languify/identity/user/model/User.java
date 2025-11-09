@@ -19,6 +19,8 @@ public class User {
 
   private String lastName;
 
+  private String image;
+
   private LocalDate createdAt;
 
   @PrePersist
