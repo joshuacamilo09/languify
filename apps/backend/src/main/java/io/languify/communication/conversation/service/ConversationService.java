@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 public class ConversationService {
   private final ConversationRepository repository;
 
-  public Conversation createConversation(String title, User user) {
+  public Conversation createConversation(String sourceLanguage, String targetLanguage, User user) {
     Conversation conversation = new Conversation();
-
-    conversation.setTitle(title);
     conversation.setUser(user);
 
     return this.repository.save(conversation);
