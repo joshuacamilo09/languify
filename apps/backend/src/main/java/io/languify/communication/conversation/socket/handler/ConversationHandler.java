@@ -6,7 +6,6 @@ import io.languify.communication.conversation.model.Conversation;
 import io.languify.communication.conversation.service.ConversationService;
 import io.languify.communication.conversation.socket.dto.ProcessConversationDataDTO;
 import io.languify.communication.conversation.socket.dto.StartConversationDTO;
-import io.languify.communication.conversation.socket.dto.TranslateConversationDTO;
 import io.languify.communication.conversation.socket.state.ConversationState;
 import io.languify.communication.conversation.socket.state.ConversationStateManager;
 import io.languify.identity.auth.model.Session;
@@ -46,7 +45,6 @@ public class ConversationHandler extends Handler {
         } catch (Exception e) {
           this.emit("conversation:start:error", null, user.getId(), session);
         }
-
         break;
       case "data":
         try {
@@ -56,21 +54,20 @@ public class ConversationHandler extends Handler {
         } catch (Exception e) {
           this.emit("conversation:data:error", null, user.getId(), session);
         }
-
         break;
       case "translate":
         try {
-          TranslateConversationDTO dto =
-              this.mapper.treeToValue(data, TranslateConversationDTO.class);
-
-          this.translateConversation(dto, session);
+          this.translateConversation(session);
         } catch (Exception e) {
           this.emit("conversation:translate:error", null, user.getId(), session);
         }
-
+        break;
+      case "swap":
+        this.swapLanguages(session);
         break;
       case "close":
         this.closeConversation(session);
+        break;
     }
   }
 
@@ -135,12 +132,16 @@ public class ConversationHandler extends Handler {
                     session);
 
                 firstAudioChunk = true;
+
+                Optional<ConversationState> state = ConversationHandler.this.state.get(userId);
+                state.ifPresent(ConversationState::swapLanguages);
               }
             });
 
     realtime.connect(data.getFromLanguage(), data.getToLanguage());
 
-    this.state.store(userId, conversation, realtime, session);
+    this.state.store(
+        userId, conversation, realtime, session, data.getFromLanguage(), data.getToLanguage());
     this.emit("conversation:start:success", null, userId, session);
   }
 
@@ -159,7 +160,7 @@ public class ConversationHandler extends Handler {
     state.getRealtime().appendAudio(data.getAudio());
   }
 
-  private void translateConversation(TranslateConversationDTO data, WebSocketSession session) {
+  private void translateConversation(WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
     String userId = s.getUser().getId();
 
@@ -174,7 +175,24 @@ public class ConversationHandler extends Handler {
         "conversation:translate:state", java.util.Map.of("state", "loading"), userId, session);
 
     ConversationState state = optionalState.get();
-    state.getRealtime().commitAndTranslate(data.getFromLanguage(), data.getToLanguage());
+    state.getRealtime().commitAndTranslate(state.getFromLanguage(), state.getToLanguage());
+  }
+
+  private void swapLanguages(WebSocketSession session) {
+    Session s = this.extractSessionFromWebSocketSession(session);
+    String userId = s.getUser().getId();
+
+    Optional<ConversationState> optionalState = this.state.get(userId);
+
+    if (optionalState.isEmpty()) {
+      this.emit("conversation:swap:error", null, userId, session);
+      return;
+    }
+
+    ConversationState state = optionalState.get();
+    state.swapLanguages();
+
+    this.emit("conversation:swap:success", null, userId, session);
   }
 
   private void closeConversation(WebSocketSession session) {
