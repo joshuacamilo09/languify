@@ -13,6 +13,9 @@ public class ConversationService {
 
   public Conversation createConversation(String sourceLanguage, String targetLanguage, User user) {
     Conversation conversation = new Conversation();
+
+    conversation.setSourceLanguage(sourceLanguage);
+    conversation.setTargetLanguage(targetLanguage);
     conversation.setUser(user);
 
     return this.repository.save(conversation);
