@@ -29,7 +29,7 @@ public class Conversation {
   private User user;
 
   @PrePersist
-  public void persist() {
+  public void prePersist() {
     this.createdAt = LocalDate.now();
   }
 }

@@ -92,8 +92,8 @@ public class ChatService {
   public Chat deleteChat(Long chatId, Long userId) {
     Chat chat = chatRepo.findById(chatId).orElseThrow(() -> new RuntimeException("Chat not found"));
 
-    if (!chat.getUser1().getUserId().equals(userId)
-        && !chat.getUser2().getUserId().equals(userId)) {
+    if (!chat.getUser1().getId().equals(userId)
+        && !chat.getUser2().getId().equals(userId)) {
       throw new RuntimeException("User don´t have permission to delete this chat");
     }
     chat.setActive(false);
