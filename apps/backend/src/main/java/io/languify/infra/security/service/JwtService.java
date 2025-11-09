@@ -1,4 +1,4 @@
-package io.languify.infra.auth;
+package io.languify.infra.security.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class Jwt {
+public class JwtService {
   @Value("${env.JWT_SECRET}")
   private String JWT_SECRET;
 

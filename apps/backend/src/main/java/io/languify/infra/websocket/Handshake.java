@@ -3,7 +3,7 @@ package io.languify.infra.websocket;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
-import io.languify.infra.auth.Jwt;
+import io.languify.infra.security.service.JwtService;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 @Component
 @RequiredArgsConstructor
 public class Handshake implements HandshakeInterceptor {
-  private final Jwt jwt;
+  private final JwtService jwt;
   private final UserRepository userRepository;
 
   @Override
