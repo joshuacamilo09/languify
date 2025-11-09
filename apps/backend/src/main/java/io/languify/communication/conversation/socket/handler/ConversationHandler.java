@@ -9,7 +9,6 @@ import io.languify.communication.conversation.socket.state.ConversationStateMana
 import io.languify.identity.auth.model.Session;
 import io.languify.infra.realtime.Realtime;
 import io.languify.infra.socket.Handler;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,27 +28,34 @@ public class ConversationHandler extends Handler {
   private String uri;
 
   public void handleSegment(String segment, JsonNode data, WebSocketSession session) {
-    if (!Objects.equals(segment, "start")) return;
-    this.startConversation(data, session);
+    switch (segment) {
+      case "start":
+        {
+          try {
+            StartConversationDTO dto = this.mapper.treeToValue(data, StartConversationDTO.class);
+            this.startConversation(dto, session);
+          } catch (Exception e) {
+            this.emit("conversation:start:error", null, session);
+          }
+        }
+      case "data":
+        this.processConversationData(data, session);
+    }
   }
 
-  private void startConversation(JsonNode data, WebSocketSession session) {
+  private void processConversationData(JsonNode data, WebSocketSession session) {}
+
+  private void startConversation(StartConversationDTO data, WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
 
-    try {
-      StartConversationDTO dto = this.mapper.treeToValue(data, StartConversationDTO.class);
+    Conversation conversation =
+        this.service.createConversation(
+            data.getSourceLanguage(), data.getTargetLanguage(), s.getUser());
 
-      Conversation conversation =
-          this.service.createConversation(
-              dto.getSourceLanguage(), dto.getTargetLanguage(), s.getUser());
+    Realtime realtime = new Realtime(this.secret, this.uri);
+    realtime.connect();
 
-      Realtime realtime = new Realtime(this.secret, this.uri);
-      realtime.connect();
-
-      this.state.store(conversation, realtime, session);
-      this.emit("conversation:start:success", null, session);
-    } catch (Exception e) {
-      this.emit("conversation:start:error", null, session);
-    }
+    this.state.store(conversation, realtime, session);
+    this.emit("conversation:start:success", null, session);
   }
 }
