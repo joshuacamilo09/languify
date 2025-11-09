@@ -18,6 +18,7 @@ public class Realtime {
 
   public void connect() {
     HttpClient client = HttpClient.newHttpClient();
+
     WebSocket.Builder builder =
         client
             .newWebSocketBuilder()
