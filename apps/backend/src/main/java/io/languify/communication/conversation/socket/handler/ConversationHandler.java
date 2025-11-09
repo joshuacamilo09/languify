@@ -24,6 +24,7 @@ import org.springframework.web.socket.WebSocketSession;
 public class ConversationHandler extends Handler {
   private final ConversationService service;
   private final ConversationStateManager state;
+
   private final ObjectMapper mapper = new ObjectMapper();
 
   @Value("${env.OPEN_AI_SECRET}")
@@ -72,54 +73,6 @@ public class ConversationHandler extends Handler {
     }
   }
 
-  private void closeConversation(WebSocketSession session) {
-    Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
-    Optional<ConversationState> optionalState = this.state.get(userId);
-
-    if (optionalState.isEmpty()) {
-      this.emit("conversation:close:error", null, userId, session);
-      return;
-    }
-
-    ConversationState state = optionalState.get();
-
-    state.getRealtime().disconnect();
-    this.state.remove(userId);
-
-    this.emit("conversation:close:success", null, userId, session);
-  }
-
-  private void translateConversation(TranslateConversationDTO data, WebSocketSession session) {
-    Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
-
-    Optional<ConversationState> optionalState = this.state.get(userId);
-
-    if (optionalState.isEmpty()) {
-      this.emit("conversation:translate:error", null, userId, session);
-      return;
-    }
-
-    ConversationState state = optionalState.get();
-    state.getRealtime().commitAndTranslate(data.getFromLanguage(), data.getToLanguage());
-  }
-
-  private void processConversationData(ProcessConversationDataDTO data, WebSocketSession session) {
-    Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
-
-    Optional<ConversationState> optionalState = this.state.get(userId);
-
-    if (optionalState.isEmpty()) {
-      this.emit("conversation:data:error", null, userId, session);
-      return;
-    }
-
-    ConversationState state = optionalState.get();
-    state.getRealtime().appendAudio(data.getAudio());
-  }
-
   private void startConversation(StartConversationDTO data, WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
     String userId = s.getUser().getId();
@@ -137,5 +90,53 @@ public class ConversationHandler extends Handler {
 
     this.state.store(userId, conversation, realtime, session);
     this.emit("conversation:start:success", null, userId, session);
+  }
+
+  private void processConversationData(ProcessConversationDataDTO data, WebSocketSession session) {
+    Session s = this.extractSessionFromWebSocketSession(session);
+    String userId = s.getUser().getId();
+
+    Optional<ConversationState> optionalState = this.state.get(userId);
+
+    if (optionalState.isEmpty()) {
+      this.emit("conversation:data:error", null, userId, session);
+      return;
+    }
+
+    ConversationState state = optionalState.get();
+    state.getRealtime().appendAudio(data.getAudio());
+  }
+
+  private void translateConversation(TranslateConversationDTO data, WebSocketSession session) {
+    Session s = this.extractSessionFromWebSocketSession(session);
+    String userId = s.getUser().getId();
+
+    Optional<ConversationState> optionalState = this.state.get(userId);
+
+    if (optionalState.isEmpty()) {
+      this.emit("conversation:translate:error", null, userId, session);
+      return;
+    }
+
+    ConversationState state = optionalState.get();
+    state.getRealtime().commitAndTranslate(data.getFromLanguage(), data.getToLanguage());
+  }
+
+  private void closeConversation(WebSocketSession session) {
+    Session s = this.extractSessionFromWebSocketSession(session);
+    String userId = s.getUser().getId();
+    Optional<ConversationState> optionalState = this.state.get(userId);
+
+    if (optionalState.isEmpty()) {
+      this.emit("conversation:close:error", null, userId, session);
+      return;
+    }
+
+    ConversationState state = optionalState.get();
+
+    state.getRealtime().disconnect();
+    this.state.remove(userId);
+
+    this.emit("conversation:close:success", null, userId, session);
   }
 }
