@@ -6,6 +6,7 @@ import io.languify.identity.user.repository.UserRepository;
 import io.languify.infra.security.service.JwtService;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -31,7 +32,7 @@ public class Handshake implements HandshakeInterceptor {
     if (normalized.isEmpty()) return false;
 
     String userId = jwt.getSubject(normalized.get());
-    Optional<User> user = this.userRepository.findUserById(userId);
+    Optional<User> user = this.userRepository.findUserById(UUID.fromString(userId));
 
     if (user.isPresent()) {
       attrs.put("session", new Session(user.get()));

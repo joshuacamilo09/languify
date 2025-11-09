@@ -6,6 +6,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import io.languify.identity.auth.dto.SignWithGoogleDTO;
 import io.languify.identity.auth.dto.SignWithGoogleResponseDTO;
+import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import io.languify.identity.user.service.UserService;
@@ -14,10 +15,8 @@ import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,6 +29,11 @@ class AuthenticationController {
 
   @Value("${google.client.id}")
   private String clientId;
+
+  @GetMapping("/session")
+  public ResponseEntity<Session> getSession(@AuthenticationPrincipal Session session) {
+    return ResponseEntity.ok(session);
+  }
 
   @PostMapping("/sign/google")
   public ResponseEntity<SignWithGoogleResponseDTO> signWithGoogle(
@@ -59,7 +63,7 @@ class AuthenticationController {
               .findByEmail(email)
               .orElseGet(() -> this.userService.createUser(email, givenName, familyName, picture));
 
-      String signed = jwt.createToken(user.getId());
+      String signed = jwt.createToken(user.getId().toString());
       return ResponseEntity.ok(new SignWithGoogleResponseDTO(signed));
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();

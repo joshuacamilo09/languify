@@ -4,21 +4,22 @@ import io.languify.communication.conversation.model.Conversation;
 import io.languify.infra.realtime.Realtime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 @Component
 public class ConversationStateManager {
-  private final Map<String, ConversationState> states =
+  private final Map<UUID, ConversationState> states =
       new ConcurrentHashMap<>();
 
-  public Optional<ConversationState> get(String userId) {
+  public Optional<ConversationState> get(UUID userId) {
     return Optional.ofNullable(this.states.get(userId));
   }
 
   public void store(
-      String userId,
+      UUID userId,
       Conversation conversation,
       Realtime realtime,
       WebSocketSession session,
@@ -30,11 +31,11 @@ public class ConversationStateManager {
             conversation, realtime, session, fromLanguage, toLanguage));
   }
 
-  public void remove(String userId) {
+  public void remove(UUID userId) {
     this.states.remove(userId);
   }
 
-  public boolean hasActiveConversation(String userId) {
+  public boolean hasActiveConversation(UUID userId) {
     return this.states.containsKey(userId);
   }
 }

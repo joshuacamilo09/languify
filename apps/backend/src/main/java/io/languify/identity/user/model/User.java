@@ -2,6 +2,7 @@ package io.languify.identity.user.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.Data;
 
 @Entity
@@ -10,7 +11,8 @@ import lombok.Data;
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  @Column(columnDefinition = "UUID")
+  private UUID id;
 
   @Column(nullable = false, unique = true)
   private String email;
