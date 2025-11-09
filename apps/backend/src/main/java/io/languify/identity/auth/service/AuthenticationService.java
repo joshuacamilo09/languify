@@ -4,7 +4,6 @@ import io.languify.identity.auth.config.JwtService;
 import io.languify.identity.auth.model.AuthRequest;
 import io.languify.identity.auth.model.AuthResponse;
 import io.languify.identity.auth.model.RegisterRequest;
-import io.languify.identity.user.model.Role;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import java.time.LocalDate;

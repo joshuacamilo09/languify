@@ -6,7 +6,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import io.languify.identity.auth.config.JwtService;
 import io.languify.identity.auth.model.AuthResponse;
-import io.languify.identity.user.model.Role;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import java.util.Collections;
@@ -42,7 +41,7 @@ public class GoogleAuthService {
 
         var user =
             userRepository
-                .findByEmail(email)
+                .findUserByEmail(email)
                 .orElseGet(
                     () -> {
                       var newUser =
