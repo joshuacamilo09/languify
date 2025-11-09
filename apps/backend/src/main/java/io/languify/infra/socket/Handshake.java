@@ -3,6 +3,7 @@ package io.languify.infra.socket;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
+import io.languify.infra.auth.Jwt;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +42,17 @@ public class Handshake implements HandshakeInterceptor {
   }
 
   private Optional<String> normalizeToken(String token) {
-    if (token == null || !token.startsWith("Bearer ") || !this.jwt.isValid(token)) {
+    if (token == null || !token.startsWith("Bearer ")) {
       return Optional.empty();
     }
 
-    return token.replace("Bearer ", "").describeConstable();
+    String cleaned = token.replace("Bearer ", "");
+
+    if (!this.jwt.isValid(cleaned)) {
+      return Optional.empty();
+    }
+
+    return Optional.of(cleaned);
   }
 
   @Override
@@ -53,7 +60,5 @@ public class Handshake implements HandshakeInterceptor {
       ServerHttpRequest req,
       ServerHttpResponse res,
       WebSocketHandler handler,
-      Exception exception) {
-    // Optional: called after handshake completes
-  }
+      Exception exception) {}
 }
