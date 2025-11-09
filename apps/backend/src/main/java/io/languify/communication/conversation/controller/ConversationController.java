@@ -6,6 +6,7 @@ import io.languify.communication.conversation.repository.ConversationRepository;
 import io.languify.communication.conversation.service.ConversationService;
 import io.languify.identity.auth.model.Session;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +44,9 @@ public class ConversationController {
     }
   }
 
-  @DeleteMapping("/conversations/{conversationId}")
+  @DeleteMapping("/{conversationId}")
   public ResponseEntity<?> deleteConversation(
-      @PathVariable String conversationId, @AuthenticationPrincipal Session session) {
+      @PathVariable UUID conversationId, @AuthenticationPrincipal Session session) {
     try {
       this.service.deleteConversation(session.getUser().getId(), conversationId);
       return ResponseEntity.ok().build();

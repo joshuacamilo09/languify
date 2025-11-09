@@ -12,6 +12,7 @@ import io.languify.infra.realtime.Realtime;
 import io.languify.infra.realtime.RealtimeEventHandler;
 import io.languify.infra.websocket.Handler;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -71,7 +72,7 @@ public class ConversationHandler extends Handler {
 
   private void startConversation(StartConversationDTO data, WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
+    UUID userId = s.getUser().getId();
 
     if (this.state.hasActiveConversation(userId)) {
       this.emit("conversation:start:error", null, userId, session);
@@ -145,7 +146,7 @@ public class ConversationHandler extends Handler {
 
   private void processConversationData(ProcessConversationDataDTO data, WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
+    UUID userId = s.getUser().getId();
 
     Optional<ConversationState> optionalState = this.state.get(userId);
 
@@ -160,7 +161,7 @@ public class ConversationHandler extends Handler {
 
   private void translateConversation(WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
+    UUID userId = s.getUser().getId();
 
     Optional<ConversationState> optionalState = this.state.get(userId);
 
@@ -178,7 +179,7 @@ public class ConversationHandler extends Handler {
 
   private void swapLanguages(WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
+    UUID userId = s.getUser().getId();
 
     Optional<ConversationState> optionalState = this.state.get(userId);
 
@@ -195,7 +196,7 @@ public class ConversationHandler extends Handler {
 
   private void closeConversation(WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
-    String userId = s.getUser().getId();
+    UUID userId = s.getUser().getId();
 
     Optional<ConversationState> optionalState = this.state.get(userId);
 

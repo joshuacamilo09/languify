@@ -3,6 +3,7 @@ package io.languify.communication.conversation.model;
 import io.languify.identity.user.model.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.Data;
 
 @Entity
@@ -11,7 +12,8 @@ import lombok.Data;
 public class Conversation {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  @Column(columnDefinition = "UUID")
+  private UUID id;
 
   private String title;
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.languify.identity.auth.model.Session;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -18,7 +19,7 @@ public abstract class Handler {
   }
 
   public void emit(
-      String event, Map<String, Object> data, String userId, WebSocketSession session) {
+      String event, Map<String, Object> data, UUID userId, WebSocketSession session) {
     try {
       HashMap<String, Object> message = new HashMap<>();
       message.put("event", event);

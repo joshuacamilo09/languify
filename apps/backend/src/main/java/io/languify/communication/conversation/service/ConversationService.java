@@ -5,6 +5,7 @@ import io.languify.communication.conversation.repository.ConversationRepository;
 import io.languify.identity.user.model.User;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +24,10 @@ public class ConversationService {
     return this.repository.save(conversation);
   }
 
-  public void deleteConversation(String userId, String conversationId) throws Exception {
+  public void deleteConversation(UUID userId, UUID conversationId) throws Exception {
     Optional<Conversation> optionalConversation =
         this.repository.findConversationById(conversationId);
+
     if (optionalConversation.isEmpty()) throw new Exception("Conversation not found");
 
     Conversation conversation = optionalConversation.get();

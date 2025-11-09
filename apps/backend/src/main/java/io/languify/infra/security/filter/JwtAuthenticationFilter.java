@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return;
       }
 
-      Optional<User> optionalUser = userRepository.findUserById(userId);
+      Optional<User> optionalUser = userRepository.findUserById(UUID.fromString(userId));
 
       if (optionalUser.isEmpty()) {
         chain.doFilter(req, res);
