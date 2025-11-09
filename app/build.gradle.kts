@@ -9,7 +9,6 @@ android {
     compileSdk {
         version = release(36)
     }
-
     defaultConfig {
         applicationId = "com.languify"
         minSdk = 24
@@ -38,6 +37,16 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    packagingOptions {
+        resources {
+            excludes += setOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+                "META-INF/io.netty.versions.properties"
+            )
+        }
     }
 }
 
@@ -95,6 +104,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.appdistribution.gradle)
     debugImplementation("androidx.compose.ui:ui-tooling")
 
 // Navigation

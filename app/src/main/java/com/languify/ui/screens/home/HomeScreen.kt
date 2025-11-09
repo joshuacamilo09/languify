@@ -5,26 +5,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.languify.R
 import com.languify.viewmodel.HomeViewModel
 import com.languify.viewmodel.HistoryViewModel
+import com.languify.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel(),
-    historyViewModel: HistoryViewModel = viewModel()
+    historyViewModel: HistoryViewModel = viewModel(),
+    profileViewModel: ProfileViewModel
 ) {
     val isRecording by homeViewModel.isRecording.collectAsState()
     val translation by homeViewModel.translation.collectAsState()
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.tab_home)) })
+            CenterAlignedTopAppBar(title = { Text("Home") })
         }
     ) { padding ->
         Column(
@@ -36,7 +36,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = if (isRecording) "🎙️ Listening..." else translation?.original ?: stringResource(R.string.home_hint),
+                text = if (isRecording) "🎙️ Listening..." else translation?.original ?: "Press the button and start speaking",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium
             )
@@ -57,7 +57,7 @@ fun HomeScreen(
                 onClick = { homeViewModel.toggleRecording(historyViewModel) },
                 modifier = Modifier.height(56.dp)
             ) {
-                Text(if (isRecording) stringResource(R.string.btn_stop) else stringResource(R.string.btn_speak))
+                Text(if (isRecording) "Stop" else "Speak")
             }
         }
     }

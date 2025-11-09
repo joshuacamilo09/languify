@@ -7,10 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.languify.R
 import com.languify.viewmodel.HistoryViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,24 +18,14 @@ import java.util.*
 fun HistoryScreen(historyViewModel: HistoryViewModel = viewModel()) {
     val historyList by historyViewModel.historyList.collectAsState()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.tab_history)) })
-        }
-    ) { padding ->
+    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("History") }) }) { padding ->
         if (historyList.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(stringResource(R.string.history_empty))
+            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                Text("No history yet.")
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(historyList) { item ->

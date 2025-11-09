@@ -11,14 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.History // <-- Add this import
+import androidx.compose.material.icons.filled.History
 
-/**
- * the bottom navigation bar visible on all screens.
- */
 @Composable
 fun BottomNavBar(navController: NavController) {
-    // define all the tabs and their routes/icons
     val items = listOf(
         BottomNavItem("home", R.string.tab_home, Icons.Filled.Home),
         BottomNavItem("history", R.string.tab_history, Icons.Filled.History),
@@ -26,28 +22,21 @@ fun BottomNavBar(navController: NavController) {
         BottomNavItem("profile", R.string.tab_profile, Icons.Filled.Person),
     )
 
-    // observe the current screen to highlight the active tab
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                // highlight if the current screen is active
                 selected = currentRoute == item.route,
-
-                // navigate when user taps a tab
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            // Prevent back stack overflow
                             popUpTo("home") { inclusive = false }
                             launchSingleTop = true
                         }
                     }
                 },
-
-                // set the icon and label
                 icon = { Icon(item.icon, contentDescription = stringResource(item.labelRes)) },
                 label = { Text(stringResource(item.labelRes)) }
             )

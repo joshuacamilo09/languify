@@ -1,35 +1,45 @@
 package com.languify.ui.screens.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
+import com.languify.R
+import com.languify.ui.viewmodel.AuthViewModel
+import com.languify.domain.usecase.Result
 import kotlinx.coroutines.launch
 
-/**
- * Ecrã de Registo — cria uma nova conta de utilizador.
- * (Por agora simula o processo; depois podemos ligar ao backend.)
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     var name by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var loading by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val scope = rememberCoroutineScope()
+    val registerState by authViewModel.registerState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -40,16 +50,22 @@ fun SignUpScreen(navController: NavController) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "Create your Languify Account",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
+            Image(
+                painter = painterResource(id = R.drawable.languify_logo),
+                contentDescription = "Languify logo",
+                modifier = Modifier.size(90.dp)
             )
 
-            // Nome completo
+            Text(
+                text = "Create Your Languify Account",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -58,70 +74,85 @@ fun SignUpScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Username
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Email
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text("Email Address") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
             )
 
-            // Password
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val icon = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(icon, contentDescription = null)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Confirmar Password
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
                 label = { Text("Confirm Password") },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val icon = if (confirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
+                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                        Icon(icon, contentDescription = null)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Botão de Registo
+            errorMessage?.let {
+                Text(text = it, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
+            }
+
             Button(
                 onClick = {
-                    loading = true
+                    if (password != confirmPassword) {
+                        errorMessage = "Passwords do not match"
+                        return@Button
+                    }
+
+                    errorMessage = null
                     scope.launch {
-                        delay(1500) // Simula chamada API
-                        // ⚙️ Aqui conectaremos com o backend
-                        navController.navigate("login") {
-                            popUpTo("signup") { inclusive = true }
-                        }
-                        loading = false
+                        authViewModel.register(name, email, password, "en")
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                enabled = !loading && name.isNotEmpty() && email.isNotEmpty() && password == confirmPassword
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF))
             ) {
-                if (loading)
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                else
-                    Text("Sign Up")
+                when (registerState) {
+                    is Result.Loading -> CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    is Result.Success -> Text("Sign Up", fontWeight = FontWeight.Bold)
+                    is Result.Error -> Text("Try Again", fontWeight = FontWeight.Bold)
+                }
             }
 
-            // Voltar ao login
+            val hasNavigated = remember { mutableStateOf(false) }
+
+            LaunchedEffect(registerState) {
+                if (registerState is Result.Success && !hasNavigated.value) {
+                    hasNavigated.value = true
+                    navController.navigate("login") {
+                        popUpTo("signup") { inclusive = true }
+                    }
+                }
+            }
+
+
             TextButton(onClick = { navController.navigate("login") }) {
                 Text("Already have an account? Log in", color = MaterialTheme.colorScheme.primary)
             }

@@ -1,96 +1,79 @@
 package com.languify
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Scaffold
-import androidx.navigation.compose.rememberNavController
-import com.languify.ui.navigation.BottomNavBar
-import com.languify.ui.navigation.LanguifyNavGraph
-import com.languify.ui.theme.LanguifyTheme
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.languify.core.PreferencesManager
+import com.languify.data.network.AuthController
+import com.languify.data.repository.AuthRepository
+import com.languify.domain.usecase.Auth.LoginUseCase
+import com.languify.domain.usecase.Auth.RegisterUseCase
+import com.languify.navigation.NavGraph
+import com.languify.ui.navigation.BottomNavBar
+import com.languify.ui.theme.LanguifyTheme
+import com.languify.ui.viewmodel.AuthViewModel
 import com.languify.viewmodel.ProfileViewModel
 import com.languify.viewmodel.ProfileViewModelFactory
-import androidx.lifecycle.lifecycleScope
-import com.languify.core.localization.LanguageManager
-import com.languify.core.localization.LocaleManager
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import java.util.Locale
 
-/**
- * Entry point of Languify app.
- * Handles navigation, dark mode and language.
- */
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
 
-        setContent {
-            val navController = rememberNavController()
+        // 🔹 Inicializa dependências principais
+        val authRepository = AuthRepository(AuthController.api)
+        val prefs = PreferencesManager(applicationContext)
 
-            // Cria UMA instância do ProfileViewModel (partilhada entre toda a app)
-            val profileViewModel: ProfileViewModel =
-                androidx.lifecycle.viewmodel.compose.viewModel(
-                    factory = ProfileViewModelFactory(applicationContext)
+        setContent {
+            LanguifyTheme { // <- ativa modo dinâmico
+                val navController = rememberNavController()
+                val context = LocalContext.current
+
+                val profileViewModel: ProfileViewModel = viewModel(
+                    factory = ProfileViewModelFactory(context, authRepository)
                 )
 
-            // Carrega preferências salvas (tema + idioma)
-            LaunchedEffect(Unit) {
-                profileViewModel.loadPreferences()
-            }
+                val loginUseCase = LoginUseCase(authRepository)
+                val registerUseCase = RegisterUseCase(authRepository)
+                val authViewModel = AuthViewModel(loginUseCase, registerUseCase)
 
-            // Observa o estado global do tema e idioma
-            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
-            val isLoggedIn by profileViewModel.isLoggedIn.collectAsState()
-            val languageCode by profileViewModel.language.collectAsState()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
 
-            // Atualiza o idioma do contexto dinamicamente
-            val localizedContext = remember(languageCode) {
-                updateLocale(languageCode)
-            }
-
-            // Tema global controlado pelo mesmo ProfileViewModel
-            LanguifyTheme(darkTheme = isDarkMode) {
                 Scaffold(
                     bottomBar = {
-                        if (isLoggedIn)
-                        { //só aparece se o user tiver feito login
+                        if (currentRoute != "login" && currentRoute != "signup") {
                             BottomNavBar(navController = navController)
                         }
                     }
-                ) { padding ->
-                    // Passa o mesmo ViewModel para o NavGraph
-                    LanguifyNavGraph(
+                ) { paddingValues ->
+                    NavGraph(
                         navController = navController,
-                        paddingValues = padding,
-                        profileViewModel = profileViewModel // <<---
+                        profileViewModel = profileViewModel,
+                        authViewModel = authViewModel
                     )
                 }
             }
         }
 
-        // Mantém o idioma sincronizado mesmo fora do Compose
-        lifecycleScope.launch {
-            LanguageManager.getLanguage(applicationContext).collect { lang ->
-                LocaleManager.setLocale(applicationContext, lang)
-            }
-        }
     }
 
-    private fun updateLocale(languageCode: String): android.content.Context {
+    // 🔹 Mantém o método de idioma
+    private fun updateLocale(languageCode: String): Context {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
-
         val config = resources.configuration
         config.setLocale(locale)
-
         return createConfigurationContext(config)
     }
 }
