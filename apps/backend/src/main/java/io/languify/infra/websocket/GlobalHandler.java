@@ -1,8 +1,8 @@
-package io.languify.infra.socket;
+package io.languify.infra.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.languify.communication.conversation.controller.websocket.ConversationHandler;
-import io.languify.infra.socket.envelopes.MessageEnvelope;
+import io.languify.infra.websocket.dto.WebSocketMessageDTO;
 import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +21,16 @@ public class GlobalHandler extends TextWebSocketHandler {
   protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message)
       throws Exception {
     String payload = message.getPayload();
-    MessageEnvelope envelope = this.mapper.readValue(payload, MessageEnvelope.class);
+    WebSocketMessageDTO dto = this.mapper.readValue(payload, WebSocketMessageDTO.class);
 
-    String[] segments = envelope.getEvent().split(":", 2);
+    String[] segments = dto.getEvent().split(":", 2);
     String resource = segments[0];
 
     if (!Objects.equals(resource, "conversation")) {
-      throw new Exception("Invalid event");
+      return;
     }
 
     String segment = segments[1];
-    conversationHandler.handleSegment(segment, envelope.getData(), session);
+    conversationHandler.handleSegment(segment, dto.getData(), session);
   }
 }

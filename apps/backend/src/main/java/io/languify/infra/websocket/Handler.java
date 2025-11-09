@@ -1,4 +1,4 @@
-package io.languify.infra.socket;
+package io.languify.infra.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
