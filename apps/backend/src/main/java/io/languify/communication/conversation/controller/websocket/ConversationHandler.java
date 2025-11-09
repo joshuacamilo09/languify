@@ -1,19 +1,18 @@
-package io.languify.communication.conversation.socket.handler;
+package io.languify.communication.conversation.controller.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.languify.communication.conversation.dto.ProcessConversationDataDTO;
+import io.languify.communication.conversation.dto.StartConversationDTO;
 import io.languify.communication.conversation.model.Conversation;
 import io.languify.communication.conversation.service.ConversationService;
-import io.languify.communication.conversation.socket.dto.ProcessConversationDataDTO;
-import io.languify.communication.conversation.socket.dto.StartConversationDTO;
-import io.languify.communication.conversation.socket.state.ConversationState;
-import io.languify.communication.conversation.socket.state.ConversationStateManager;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.infra.realtime.Realtime;
 import io.languify.infra.realtime.RealtimeEventHandler;
 import io.languify.infra.socket.Handler;
 import java.util.Optional;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -213,4 +212,5 @@ public class ConversationHandler extends Handler {
 
     this.emit("conversation:close:success", null, userId, session);
   }
-}
+  }
+

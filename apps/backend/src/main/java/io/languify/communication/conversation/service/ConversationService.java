@@ -1,7 +1,7 @@
 package io.languify.communication.conversation.service;
 
 import io.languify.communication.conversation.model.Conversation;
-import io.languify.communication.conversation.repo.ConversationRepository;
+import io.languify.communication.conversation.repository.ConversationRepository;
 import io.languify.identity.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

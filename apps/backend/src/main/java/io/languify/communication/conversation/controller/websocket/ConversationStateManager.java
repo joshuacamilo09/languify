@@ -1,4 +1,4 @@
-package io.languify.communication.conversation.socket.state;
+package io.languify.communication.conversation.controller.websocket;
 
 import io.languify.communication.conversation.model.Conversation;
 import io.languify.infra.realtime.Realtime;
@@ -10,7 +10,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 @Component
 public class ConversationStateManager {
-  private final Map<String, ConversationState> states = new ConcurrentHashMap<>();
+  private final Map<String, ConversationState> states =
+      new ConcurrentHashMap<>();
 
   public Optional<ConversationState> get(String userId) {
     return Optional.ofNullable(this.states.get(userId));
@@ -24,7 +25,9 @@ public class ConversationStateManager {
       String fromLanguage,
       String toLanguage) {
     this.states.put(
-        userId, new ConversationState(conversation, realtime, session, fromLanguage, toLanguage));
+        userId,
+        new ConversationState(
+            conversation, realtime, session, fromLanguage, toLanguage));
   }
 
   public void remove(String userId) {

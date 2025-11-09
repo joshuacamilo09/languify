@@ -1,4 +1,4 @@
-package io.languify.communication.conversation.repo;
+package io.languify.communication.conversation.repository;
 
 import io.languify.communication.conversation.model.Conversation;
 import org.springframework.data.jpa.repository.JpaRepository;

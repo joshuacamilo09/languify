@@ -1,4 +1,4 @@
-package io.languify.communication.conversation.socket.dto;
+package io.languify.communication.conversation.dto;
 
 import lombok.Data;
 
