@@ -12,18 +12,14 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 @RequiredArgsConstructor
 public class Socket implements WebSocketConfigurer {
-  private Handshake handshake;
+  private final Handshake handshake;
+  private final Handler handler;
 
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry
-        .addHandler(this.handler(), "/socket")
+        .addHandler(handler, "/socket")
         .addInterceptors(this.handshake)
         .setAllowedOrigins("*");
-  }
-
-  @Bean
-  public WebSocketHandler handler() {
-    return new Handler();
   }
 }

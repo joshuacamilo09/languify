@@ -1,12 +1,27 @@
 package io.languify.communication.conversation.handler;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.languify.communication.conversation.model.Conversation;
+import io.languify.communication.conversation.service.ConversationService;
 import io.languify.identity.auth.model.Session;
-import io.languify.infra.socket.skeletons.HandlerSkeleton;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketSession;
 
-public class ConversationHandler extends HandlerSkeleton {
-  public ConversationHandler(Session session) {
-    super(session);
+@Component
+@RequiredArgsConstructor
+public class ConversationHandler {
+  private final ConversationService service;
+
+  public void handleSegment(String segment, JsonNode data, WebSocketSession webSocketSession) {
+    Session session = (Session) webSocketSession.getAttributes().get("session");
+    if (!Objects.equals(segment, "start")) return;
+
+    this.startConversation(data, session);
   }
 
-  public void handleSegment(String segment) {}
+  private void startConversation(JsonNode data, Session session) {
+    Conversation conversation = this.service.createConversation("Untitled", session.getUser());
+  }
 }
