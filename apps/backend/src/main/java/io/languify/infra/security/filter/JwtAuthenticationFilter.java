@@ -6,7 +6,6 @@ import io.languify.identity.user.repository.UserRepository;
 import io.languify.infra.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,20 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletRequest req, @NonNull HttpServletResponse res, @NonNull FilterChain chain)
       throws ServletException, IOException {
 
-    Cookie[] cookies = req.getCookies();
-    String token = null;
+    String bearer = req.getHeader("Authorization");
 
-    for (Cookie cookie : cookies) {
-      if ("token".equals(cookie.getName())) {
-        token = cookie.getValue();
-        break;
-      }
-    }
-
-    if (token == null) {
+    if (bearer == null || !bearer.startsWith("Bearer ")) {
       chain.doFilter(req, res);
       return;
     }
+
+    String token = bearer.substring(7);
 
     try {
       if (!jwt.isValid(token)) {
