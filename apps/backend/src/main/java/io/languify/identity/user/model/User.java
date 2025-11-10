@@ -17,13 +17,13 @@ public class User {
   @Column(nullable = false, unique = true)
   private String email;
 
-  private String firstName;
+  @Column private String firstName;
 
-  private String lastName;
+  @Column private String lastName;
 
-  private String image;
+  @Column private String image;
 
-  private LocalDate createdAt;
+  @Column private LocalDate createdAt;
 
   @PrePersist
   public void prePersist() {

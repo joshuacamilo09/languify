@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "conversations")
@@ -15,9 +17,9 @@ public class Conversation {
   @Column(columnDefinition = "UUID")
   private UUID id;
 
-  private String title;
+  @Column private String title;
 
-  private String summary;
+  @Column private String summary;
 
   @Column(nullable = false)
   private String fromLanguage;
@@ -30,6 +32,7 @@ public class Conversation {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private User user;
 
   @PrePersist
