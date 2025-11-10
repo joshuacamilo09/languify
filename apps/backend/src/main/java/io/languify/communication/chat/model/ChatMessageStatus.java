@@ -1,0 +1,8 @@
+package io.languify.communication.chat.model;
+
+public enum ChatMessageStatus {
+  PROCESSING,
+  PROCESSED,
+  CANCELLED,
+  FAILED
+}

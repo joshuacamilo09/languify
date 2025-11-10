@@ -1,5 +1,6 @@
-package io.languify.communication.conversation.model;
+package io.languify.communication.chat.model;
 
+import io.languify.identity.user.model.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -8,28 +9,28 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "conversation_transcriptions")
+@Table(name = "chats")
 @Data
-public class ConversationTranscription {
+public class ChatModel {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(columnDefinition = "UUID")
   private UUID id;
 
-  @Column private String originalTranscript;
+  @Column private String title;
 
-  @Column private String translatedTranscript;
+  @Column private String summary;
 
   @Column(nullable = false)
   private LocalDate createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "conversation_id", nullable = false)
+  @JoinColumn(name = "userId", nullable = false)
   @OnDelete(action = OnDeleteAction.CASCADE)
-  private Conversation conversation;
+  private User user;
 
   @PrePersist
-  public void prePersist() {
+  private void prePersist() {
     this.createdAt = LocalDate.now();
   }
 }
