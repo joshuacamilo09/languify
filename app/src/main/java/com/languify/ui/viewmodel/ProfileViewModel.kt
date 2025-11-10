@@ -63,7 +63,6 @@ class ProfileViewModel(
         }
     }
 
-    // ✅ Salva dados do login (token, loggedIn = true)
     fun saveLoginData(token: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             prefs.setToken(token)
@@ -73,7 +72,6 @@ class ProfileViewModel(
         }
     }
 
-    // ✅ Login pelo AuthRepository (útil se quiseres autenticar diretamente)
     fun login(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
@@ -100,7 +98,6 @@ class ProfileViewModel(
         }
     }
 
-    // ✅ Buscar perfil do backend
     fun fetchUserProfile(id: Long) {
         viewModelScope.launch {
             try {
@@ -141,9 +138,7 @@ class ProfileViewModel(
 
     fun getUserId(onResult: (Long) -> Unit) {
         viewModelScope.launch {
-            prefs.userId.collect { id ->
-                onResult(id)
-            }
+            prefs.userId.collect { id -> onResult(id) }
         }
     }
 }

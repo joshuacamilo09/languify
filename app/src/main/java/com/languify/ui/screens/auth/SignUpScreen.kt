@@ -1,5 +1,6 @@
 package com.languify.ui.screens.auth
 
+// Importações
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,20 +28,27 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel
+    navController: NavController,          // Navegação entre ecrãs
+    authViewModel: AuthViewModel           // Lógica de registo (signup)
 ) {
+    // Campos do formulário
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+
+    // Estados de visibilidade da password
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+
+    // Mensagem de erro
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    // Observa estado do registo
     val scope = rememberCoroutineScope()
     val registerState by authViewModel.registerState.collectAsState()
 
+    // Estrutura principal
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -53,12 +61,14 @@ fun SignUpScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
+            // Logo da app
             Image(
                 painter = painterResource(id = R.drawable.languify_logo),
                 contentDescription = "Languify logo",
                 modifier = Modifier.size(90.dp)
             )
 
+            // Título
             Text(
                 text = "Create Your Languify Account",
                 style = MaterialTheme.typography.headlineMedium,
@@ -66,6 +76,7 @@ fun SignUpScreen(
                 fontWeight = FontWeight.Bold
             )
 
+            // Nome completo
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -74,6 +85,7 @@ fun SignUpScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Email
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -83,6 +95,7 @@ fun SignUpScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Password com botão de visibilidade
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -98,6 +111,7 @@ fun SignUpScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Confirmar Password
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
@@ -113,10 +127,12 @@ fun SignUpScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Mostra erro se as passwords não coincidirem
             errorMessage?.let {
                 Text(text = it, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
             }
 
+            // Botão de Sign Up
             Button(
                 onClick = {
                     if (password != confirmPassword) {
@@ -141,8 +157,10 @@ fun SignUpScreen(
                 }
             }
 
+            // Evita navegação duplicada
             val hasNavigated = remember { mutableStateOf(false) }
 
+            // Redireciona automaticamente após registo
             LaunchedEffect(registerState) {
                 if (registerState is Result.Success && !hasNavigated.value) {
                     hasNavigated.value = true
@@ -152,7 +170,7 @@ fun SignUpScreen(
                 }
             }
 
-
+            // Link para voltar ao login
             TextButton(onClick = { navController.navigate("login") }) {
                 Text("Already have an account? Log in", color = MaterialTheme.colorScheme.primary)
             }

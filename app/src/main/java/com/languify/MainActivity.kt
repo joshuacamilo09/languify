@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,21 +37,33 @@ class MainActivity : ComponentActivity() {
         val prefs = PreferencesManager(applicationContext)
 
         setContent {
-            LanguifyTheme { // <- ativa modo dinâmico
-                val navController = rememberNavController()
-                val context = LocalContext.current
+            val context = LocalContext.current
+            val navController = rememberNavController()
 
-                val profileViewModel: ProfileViewModel = viewModel(
-                    factory = ProfileViewModelFactory(context, authRepository)
-                )
+            // ✅ ViewModel global do utilizador
+            val profileViewModel: ProfileViewModel = viewModel(
+                factory = ProfileViewModelFactory(context, authRepository)
+            )
 
-                val loginUseCase = LoginUseCase(authRepository)
-                val registerUseCase = RegisterUseCase(authRepository)
-                val authViewModel = AuthViewModel(loginUseCase, registerUseCase)
+            // ✅ Estados observáveis
+            val isDarkMode by profileViewModel.isDarkMode.collectAsState(initial = isSystemInDarkTheme())
+            val language by profileViewModel.language.collectAsState(initial = "en")
 
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
+            // ✅ Atualiza idioma automaticamente
+            updateLocale(language)
 
+            // 🔹 Inicializa viewmodel de autenticação
+            val authViewModel = AuthViewModel(
+                loginUseCase = LoginUseCase(authRepository),
+                registerUseCase = RegisterUseCase(authRepository)
+            )
+
+            // 🔹 Controla a barra inferior
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            // ✅ Tema global reativo
+            LanguifyTheme(darkTheme = isDarkMode) {
                 Scaffold(
                     bottomBar = {
                         if (currentRoute != "login" && currentRoute != "signup") {
@@ -65,10 +79,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
     }
 
-    // 🔹 Mantém o método de idioma
+    // 🌍 Atualiza o idioma da app
     private fun updateLocale(languageCode: String): Context {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
