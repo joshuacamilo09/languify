@@ -1,17 +1,3 @@
-# ORDEM DO PROJETO (Parte do BackEnd)
+# Languify
 
-
-## O ideal é progredir por camadas de dependência — ou seja, construir de baixo para cima:
-
-### Ordem-Estado
-
-1. Models e Repositories -> Já está
-2. Configurações base	SecurityConfig, ApplicationConfig, JwtService, etc.. ->	Já está
-3. Auth (Google + JWT) ->	Já está
-4. UserController e UserService	->	Já está
-5. Chat + endpoints de chat -> Já está
-6. WebSockets chat -> Já está 
-7. TranslationService -> 	Já está 
-8. AgentContextual ->
-9. RealTime translation with AI -> 
-10. Testes e documentação ->
+A real time translation application.
