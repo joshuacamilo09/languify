@@ -1,9 +1,12 @@
 package io.languify.communication.conversation.controller;
 
+import io.languify.communication.conversation.dto.GetConversationTranscriptionsDTO;
 import io.languify.communication.conversation.dto.GetConversationsDTO;
 import io.languify.communication.conversation.dto.UpdateConversationDTO;
 import io.languify.communication.conversation.model.Conversation;
+import io.languify.communication.conversation.model.ConversationTranscription;
 import io.languify.communication.conversation.repository.ConversationRepository;
+import io.languify.communication.conversation.repository.ConversationTranscriptionRepository;
 import io.languify.communication.conversation.service.ConversationService;
 import io.languify.identity.auth.model.Session;
 import java.util.List;
@@ -19,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/conversations")
 public class ConversationController {
   private ConversationService service;
+
   private ConversationRepository repository;
+  private ConversationTranscriptionRepository transcriptionRepository;
 
   @GetMapping
   public ResponseEntity<List<GetConversationsDTO>> getConversations(
@@ -88,6 +93,37 @@ public class ConversationController {
           (conversation) -> {
             this.repository.delete(conversation);
             return ResponseEntity.ok().build();
+          });
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
+  }
+
+  @GetMapping("/{conversationId}/transcriptions")
+  public ResponseEntity<?> getConversationTranscriptions(
+      @PathVariable UUID conversationId, @AuthenticationPrincipal Session session) {
+    try {
+      return authorizeConversation(
+          conversationId,
+          session,
+          conversation -> {
+            List<ConversationTranscription> transcriptions =
+                this.transcriptionRepository.findConversationTranscriptionsByConversationId(
+                    conversation.getId());
+
+            List<GetConversationTranscriptionsDTO> dtos =
+                transcriptions.stream()
+                    .map(
+                        (transcription) ->
+                            new GetConversationTranscriptionsDTO(
+                                transcription.getId(),
+                                transcription.getConversation().getId(),
+                                transcription.getOriginalTranscription(),
+                                transcription.getTranslatedTranscription(),
+                                transcription.getCreatedAt()))
+                    .toList();
+
+            return ResponseEntity.ok(dtos);
           });
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
