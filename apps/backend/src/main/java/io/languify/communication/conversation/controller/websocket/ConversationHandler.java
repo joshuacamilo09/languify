@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.languify.communication.conversation.dto.ProcessConversationDataDTO;
 import io.languify.communication.conversation.dto.StartConversationDTO;
 import io.languify.communication.conversation.model.Conversation;
+import io.languify.communication.conversation.model.ConversationTranscription;
+import io.languify.communication.conversation.repository.ConversationTranscriptionRepository;
 import io.languify.communication.conversation.service.ConversationService;
+import io.languify.communication.conversation.service.ConversationTranscriptionService;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.infra.realtime.Realtime;
@@ -22,8 +25,11 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class ConversationHandler extends Handler {
   private final ConversationService service;
-  private final ConversationStateManager state;
 
+  private final ConversationTranscriptionRepository transcriptionRepository;
+  private final ConversationTranscriptionService transcriptionService;
+
+  private final ConversationStateManager state;
   private final ObjectMapper mapper = new ObjectMapper();
 
   @Value("${env.OPEN_AI_SECRET}")
@@ -87,27 +93,40 @@ public class ConversationHandler extends Handler {
             this.secret,
             this.uri,
             new RealtimeEventHandler() {
-              private boolean firstAudioChunk = true;
+              private final ConversationTranscription transcription =
+                  transcriptionService.createConversationTranscription(conversation);
+
+              private boolean firstDelta = true;
 
               @Override
               public void onOriginalTranscription(String transcript) {
-                // TODO: Persist the original transcription
+                if (transcript == null) {
+                  return;
+                }
+
+                transcription.setOriginalTranscript(transcript);
+                transcriptionRepository.save(transcription);
               }
 
               @Override
               public void onTranslatedTranscription(String transcript) {
-                // TODO: Persist the translated transcription
+                if (transcript == null) {
+                  return;
+                }
+
+                transcription.setTranslatedTranscript(transcript);
+                transcriptionRepository.save(transcription);
               }
 
               @Override
               public void onAudioDelta(String audioDelta) {
-                if (firstAudioChunk) {
+                if (firstDelta) {
                   emit(
                       "conversation:translate:state",
                       java.util.Map.of("state", "reproducing"),
                       userId,
                       session);
-                  firstAudioChunk = false;
+                  firstDelta = false;
                 }
 
                 emit(
@@ -130,7 +149,7 @@ public class ConversationHandler extends Handler {
                     userId,
                     session);
 
-                firstAudioChunk = true;
+                firstDelta = true;
 
                 Optional<ConversationState> state = ConversationHandler.this.state.get(userId);
                 state.ifPresent(ConversationState::swapLanguages);
@@ -212,5 +231,4 @@ public class ConversationHandler extends Handler {
 
     this.emit("conversation:close:success", null, userId, session);
   }
-  }
-
+}

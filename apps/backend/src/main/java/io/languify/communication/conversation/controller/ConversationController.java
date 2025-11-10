@@ -118,7 +118,7 @@ public class ConversationController {
                             new GetConversationTranscriptionsDTO(
                                 transcription.getId(),
                                 transcription.getConversation().getId(),
-                                transcription.getOriginalTranscription(),
+                                transcription.getOriginalTranscript(),
                                 transcription.getTranslatedTranscription(),
                                 transcription.getCreatedAt()))
                     .toList();

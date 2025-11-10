@@ -14,11 +14,9 @@ public class ConversationTranscription {
   @Column(columnDefinition = "UUID")
   private UUID id;
 
-  @Column(nullable = false)
-  private String originalTranscription;
+  @Column private String originalTranscript;
 
-  @Column(nullable = false)
-  private String translatedTranscription;
+  @Column private String translatedTranscript;
 
   @Column(nullable = false)
   private LocalDate createdAt;
