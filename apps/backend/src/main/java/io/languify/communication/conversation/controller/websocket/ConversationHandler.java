@@ -32,10 +32,10 @@ public class ConversationHandler extends Handler {
   private final ConversationStateManager state;
   private final ObjectMapper mapper = new ObjectMapper();
 
-  @Value("${env.OPEN_AI_SECRET}")
+  @Value("${openai.secret}")
   private String secret;
 
-  @Value("${env.OPEN_AI_REALTIME_URI}")
+  @Value("${openai.realtime.uri}")
   private String uri;
 
   public void handleSegment(String segment, JsonNode data, WebSocketSession session) {
