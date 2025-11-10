@@ -119,7 +119,7 @@ public class ConversationController {
                                 transcription.getId(),
                                 transcription.getConversation().getId(),
                                 transcription.getOriginalTranscript(),
-                                transcription.getTranslatedTranscription(),
+                                transcription.getTranslatedTranscript(),
                                 transcription.getCreatedAt()))
                     .toList();
 
