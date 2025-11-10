@@ -1,14 +1,18 @@
 package io.languify.communication.conversation.controller;
 
 import io.languify.communication.conversation.dto.GetConversationsDTO;
+import io.languify.communication.conversation.dto.UpdateConversationDTO;
 import io.languify.communication.conversation.model.Conversation;
 import io.languify.communication.conversation.repository.ConversationRepository;
 import io.languify.communication.conversation.service.ConversationService;
 import io.languify.identity.auth.model.Session;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,14 +48,69 @@ public class ConversationController {
     }
   }
 
+  @PutMapping("/{conversationId}")
+  public ResponseEntity<?> updateConversation(
+      @PathVariable UUID conversationId,
+      @Validated UpdateConversationDTO req,
+      @AuthenticationPrincipal Session session) {
+    try {
+      return authorizeConversation(
+          conversationId,
+          session,
+          (conversation) -> {
+            String title = req.getTitle();
+
+            if (title != null) {
+              conversation.setTitle(req.getTitle());
+            }
+
+            String summary = req.getSummary();
+
+            if (summary != null) {
+              conversation.setSummary(summary);
+            }
+
+            this.repository.save(conversation);
+            return ResponseEntity.noContent().build();
+          });
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
+  }
+
   @DeleteMapping("/{conversationId}")
   public ResponseEntity<?> deleteConversation(
       @PathVariable UUID conversationId, @AuthenticationPrincipal Session session) {
     try {
-      this.service.deleteConversation(session.getUser().getId(), conversationId);
-      return ResponseEntity.ok().build();
+      return authorizeConversation(
+          conversationId,
+          session,
+          (conversation) -> {
+            this.repository.delete(conversation);
+            return ResponseEntity.ok().build();
+          });
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }
+  }
+
+  private ResponseEntity<?> authorizeConversation(
+      UUID conversationId,
+      Session session,
+      java.util.function.Function<Conversation, ResponseEntity<?>> fn) {
+    Optional<Conversation> optionalConversation =
+        this.repository.findConversationById(conversationId);
+
+    if (optionalConversation.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    Conversation conversation = optionalConversation.get();
+
+    if (!Objects.equals(session.getUser().getId(), conversation.getUser().getId())) {
+      return ResponseEntity.status(403).build();
+    }
+
+    return fn.apply(conversation);
   }
 }
