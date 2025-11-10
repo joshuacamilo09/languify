@@ -5,13 +5,12 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import io.languify.identity.auth.dto.SignWithGoogleDTO;
+import io.languify.identity.auth.dto.SignWithGoogleResponseDTO;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import io.languify.identity.user.service.UserService;
 import io.languify.infra.security.service.JwtService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +36,8 @@ class AuthenticationController {
   }
 
   @PostMapping("/sign/google")
-  public ResponseEntity<?> signWithGoogle(
-      @RequestBody SignWithGoogleDTO request, HttpServletResponse response) {
+  public ResponseEntity<SignWithGoogleResponseDTO> signWithGoogle(
+      @RequestBody SignWithGoogleDTO req) {
     try {
       GoogleIdTokenVerifier verifier =
           new GoogleIdTokenVerifier.Builder(
@@ -46,7 +45,7 @@ class AuthenticationController {
               .setAudience(Collections.singletonList(clientId))
               .build();
 
-      GoogleIdToken token = verifier.verify(request.getIdToken());
+      GoogleIdToken token = verifier.verify(req.getIdToken());
 
       if (token == null) {
         return ResponseEntity.badRequest().build();
@@ -65,16 +64,7 @@ class AuthenticationController {
               .orElseGet(() -> this.userService.createUser(email, givenName, familyName, picture));
 
       String signed = jwt.createToken(user.getId().toString());
-
-      Cookie cookie = new Cookie("token", signed);
-      cookie.setHttpOnly(true);
-      cookie.setSecure(true);
-      cookie.setPath("/");
-      cookie.setMaxAge(60 * 60 * 24 * 7);
-
-      response.addCookie(cookie);
-
-      return ResponseEntity.ok().build();
+      return ResponseEntity.ok(new SignWithGoogleResponseDTO(signed));
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }
