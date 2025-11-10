@@ -1,0 +1,11 @@
+name: languify
+
+services:
+  languify_postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: languify
+      POSTGRES_PASSWORD: languify_dev
+      POSTGRES_DB: languify_db
+    ports:
+      - "5432:5432"
