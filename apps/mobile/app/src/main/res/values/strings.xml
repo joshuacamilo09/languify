@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="app_name">Languify</string>
+
+<!-- Navigation Tabs -->
+<string name="tab_home">Home</string>
+<string name="tab_history">History</string>
+<string name="tab_map">Map</string>
+<string name="tab_profile">Profile</string>
+
+<!-- Home -->
+<string name="home_hint">Tap the button to start speaking</string>
+<string name="btn_speak">Speak</string>
+<string name="btn_stop">Stop</string>
+
+<!-- History -->
+<string name="history_empty">No translations yet</string>
+
+<!-- Profile -->
+<string name="profile_title">Profile</string>
+<string name="profile_theme">Dark Mode</string>
+<string name="profile_language">Language</string>
+</resources>
