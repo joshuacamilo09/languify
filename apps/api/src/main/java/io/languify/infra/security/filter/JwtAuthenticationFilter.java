@@ -3,6 +3,7 @@ package io.languify.infra.security.filter;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
+import io.languify.infra.logging.Logger;
 import io.languify.infra.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwt;
@@ -70,6 +73,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       chain.doFilter(req, res);
     } catch (Exception e) {
+      Logger.error(
+          log,
+          "Failed to authenticate request",
+          e,
+          "path",
+          req.getRequestURI());
       chain.doFilter(req, res);
     }
   }

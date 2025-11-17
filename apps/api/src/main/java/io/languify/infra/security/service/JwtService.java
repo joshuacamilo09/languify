@@ -4,14 +4,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.languify.infra.logging.Logger;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class JwtService {
   @Value("${jwt.secret}")
   private String JWT_SECRET;
@@ -35,6 +38,7 @@ public class JwtService {
     try {
       return getClaims(token).getExpiration().before(new Date());
     } catch (Exception ex) {
+      Logger.error(log, "Failed to validate JWT token", ex);
       return true;
     }
   }

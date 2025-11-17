@@ -29,28 +29,24 @@ public class ConversationController {
   @GetMapping
   public ResponseEntity<List<GetConversationsDTO>> getConversations(
       @AuthenticationPrincipal Session session) {
-    try {
       List<Conversation> conversations =
-          this.repository.findConversationsByUserId(session.getUser().getId());
+              this.repository.findConversationsByUserId(session.getUser().getId());
 
       List<GetConversationsDTO> dtos =
-          conversations.stream()
-              .map(
-                  (conversation) ->
-                      new GetConversationsDTO(
-                          conversation.getId(),
-                          conversation.getUser().getId(),
-                          conversation.getTitle(),
-                          conversation.getSummary(),
-                          conversation.getFromLanguage(),
-                          conversation.getToLanguage(),
-                          conversation.getCreatedAt()))
-              .toList();
+              conversations.stream()
+                      .map(
+                              (conversation) ->
+                                      new GetConversationsDTO(
+                                              conversation.getId(),
+                                              conversation.getUser().getId(),
+                                              conversation.getTitle(),
+                                              conversation.getSummary(),
+                                              conversation.getFromLanguage(),
+                                              conversation.getToLanguage(),
+                                              conversation.getCreatedAt()))
+                      .toList();
 
       return ResponseEntity.ok(dtos);
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
-    }
   }
 
   @PutMapping("/{conversationId}")
@@ -58,76 +54,64 @@ public class ConversationController {
       @PathVariable UUID conversationId,
       @Validated UpdateConversationDTO req,
       @AuthenticationPrincipal Session session) {
-    try {
       return authorizeConversation(
-          conversationId,
-          session,
-          (conversation) -> {
-            String title = req.getTitle();
+              conversationId,
+              session,
+              (conversation) -> {
+                  String title = req.getTitle();
 
-            if (title != null) {
-              conversation.setTitle(req.getTitle());
-            }
+                  if (title != null) {
+                      conversation.setTitle(req.getTitle());
+                  }
 
-            String summary = req.getSummary();
+                  String summary = req.getSummary();
 
-            if (summary != null) {
-              conversation.setSummary(summary);
-            }
+                  if (summary != null) {
+                      conversation.setSummary(summary);
+                  }
 
-            this.repository.save(conversation);
-            return ResponseEntity.noContent().build();
-          });
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
-    }
+                  this.repository.save(conversation);
+                  return ResponseEntity.noContent().build();
+              });
   }
 
   @DeleteMapping("/{conversationId}")
   public ResponseEntity<?> deleteConversation(
       @PathVariable UUID conversationId, @AuthenticationPrincipal Session session) {
-    try {
       return authorizeConversation(
-          conversationId,
-          session,
-          (conversation) -> {
-            this.repository.delete(conversation);
-            return ResponseEntity.ok().build();
-          });
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
-    }
+              conversationId,
+              session,
+              (conversation) -> {
+                  this.repository.delete(conversation);
+                  return ResponseEntity.ok().build();
+              });
   }
 
   @GetMapping("/{conversationId}/transcriptions")
   public ResponseEntity<?> getConversationTranscriptions(
       @PathVariable UUID conversationId, @AuthenticationPrincipal Session session) {
-    try {
       return authorizeConversation(
-          conversationId,
-          session,
-          conversation -> {
-            List<ConversationTranscription> transcriptions =
-                this.transcriptionRepository.findConversationTranscriptionsByConversationId(
-                    conversation.getId());
+              conversationId,
+              session,
+              conversation -> {
+                  List<ConversationTranscription> transcriptions =
+                          this.transcriptionRepository.findConversationTranscriptionsByConversationId(
+                                  conversation.getId());
 
-            List<GetConversationTranscriptionsDTO> dtos =
-                transcriptions.stream()
-                    .map(
-                        (transcription) ->
-                            new GetConversationTranscriptionsDTO(
-                                transcription.getId(),
-                                transcription.getConversation().getId(),
-                                transcription.getOriginalTranscript(),
-                                transcription.getTranslatedTranscript(),
-                                transcription.getCreatedAt()))
-                    .toList();
+                  List<GetConversationTranscriptionsDTO> dtos =
+                          transcriptions.stream()
+                                  .map(
+                                          (transcription) ->
+                                                  new GetConversationTranscriptionsDTO(
+                                                          transcription.getId(),
+                                                          transcription.getConversation().getId(),
+                                                          transcription.getOriginalTranscript(),
+                                                          transcription.getTranslatedTranscript(),
+                                                          transcription.getCreatedAt()))
+                                  .toList();
 
-            return ResponseEntity.ok(dtos);
-          });
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
-    }
+                  return ResponseEntity.ok(dtos);
+              });
   }
 
   private ResponseEntity<?> authorizeConversation(

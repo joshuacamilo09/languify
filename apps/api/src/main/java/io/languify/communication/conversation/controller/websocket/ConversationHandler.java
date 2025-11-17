@@ -11,18 +11,21 @@ import io.languify.communication.conversation.service.ConversationService;
 import io.languify.communication.conversation.service.ConversationTranscriptionService;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
+import io.languify.infra.logging.Logger;
 import io.languify.infra.realtime.Realtime;
 import io.languify.infra.realtime.RealtimeEventHandler;
 import io.languify.infra.websocket.Handler;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ConversationHandler extends Handler {
   private final ConversationService service;
 
@@ -41,6 +44,7 @@ public class ConversationHandler extends Handler {
   public void handleSegment(String segment, JsonNode data, WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
     User user = s.getUser();
+    UUID userId = user != null ? user.getId() : null;
 
     switch (segment) {
       case "start":
@@ -48,8 +52,17 @@ public class ConversationHandler extends Handler {
           StartConversationDTO dto = this.mapper.treeToValue(data, StartConversationDTO.class);
           this.startConversation(dto, session);
         } catch (Exception e) {
-          this.emit("conversation:start:error", null, user.getId(), session);
+          Logger.error(
+              log,
+              "Failed to start conversation",
+              e,
+              "userId",
+              userId,
+              "sessionId",
+              session.getId());
+          this.emit("conversation:start:error", null, userId, session);
         }
+
         break;
       case "data":
         try {
@@ -57,15 +70,32 @@ public class ConversationHandler extends Handler {
               this.mapper.treeToValue(data, ProcessConversationDataDTO.class);
           this.processConversationData(dto, session);
         } catch (Exception e) {
-          this.emit("conversation:data:error", null, user.getId(), session);
+          Logger.error(
+              log,
+              "Failed to process conversation data",
+              e,
+              "userId",
+              userId,
+              "sessionId",
+              session.getId());
+          this.emit("conversation:data:error", null, userId, session);
         }
         break;
       case "translate":
         try {
           this.translateConversation(session);
         } catch (Exception e) {
-          this.emit("conversation:translate:error", null, user.getId(), session);
+          Logger.error(
+              log,
+              "Failed to translate conversation",
+              e,
+              "userId",
+              userId,
+              "sessionId",
+              session.getId());
+          this.emit("conversation:translate:error", null, userId, session);
         }
+
         break;
       case "swap":
         this.swapLanguages(session);
@@ -160,6 +190,7 @@ public class ConversationHandler extends Handler {
 
     this.state.store(
         userId, conversation, realtime, session, data.getFromLanguage(), data.getToLanguage());
+
     this.emit("conversation:start:success", null, userId, session);
   }
 

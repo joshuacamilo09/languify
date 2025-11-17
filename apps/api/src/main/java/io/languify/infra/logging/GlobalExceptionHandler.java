@@ -1,8 +1,6 @@
 package io.languify.infra.logging;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.Instant;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -22,14 +20,19 @@ public class GlobalExceptionHandler {
       Exception ex, HttpServletRequest request) {
     HttpStatus status = resolveStatus(ex);
 
-    log.error(
-        "Unhandled HTTP exception: method={}, path={}, status={}, message={}",
-        request.getMethod(),
-        request.getPathInfo(),
-        status.value(),
-        ex.getMessage(),
-        ex
-    );
+    String method = request != null ? request.getMethod() : "UNKNOWN";
+    String path = request != null ? request.getRequestURI() : "unknown";
+
+    Logger.error(
+        log,
+        "Unhandled HTTP exception",
+        ex,
+        "method",
+        method,
+        "path",
+        path,
+        "status",
+        status.value());
 
     return ResponseEntity.status(status).body(Map.of("message", "Something went wrong"));
   }

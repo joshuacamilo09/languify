@@ -3,12 +3,15 @@ package io.languify.infra.realtime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.languify.infra.logging.Logger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Realtime {
   private final String REALTIME_SECRET;
   private final String REALTIME_URI;
@@ -51,7 +54,7 @@ public class Realtime {
                       JsonNode event = mapper.readTree(data.toString());
                       handleEvent(event);
                     } catch (Exception e) {
-                      System.err.println("Error parsing OpenAI event: " + e.getMessage());
+                      Logger.error(log, "Error parsing OpenAI event", e);
                     }
 
                     return WebSocket.Listener.super.onText(socket, data, last);
@@ -125,7 +128,7 @@ public class Realtime {
       Map<String, Object> config = getSessionConfiguration(instructions, transcription);
       send(mapper.writeValueAsString(config));
     } catch (JsonProcessingException e) {
-      System.err.println("Error creating session config: " + e.getMessage());
+      Logger.error(log, "Error creating session config", e);
     }
   }
 
@@ -154,7 +157,7 @@ public class Realtime {
       Map<String, Object> event = Map.of("type", "input_audio_buffer.append", "audio", base64Audio);
       send(mapper.writeValueAsString(event));
     } catch (JsonProcessingException e) {
-      System.err.println("Error appending audio: " + e.getMessage());
+      Logger.error(log, "Error appending audio", e);
     }
   }
 
@@ -176,7 +179,7 @@ public class Realtime {
 
       clearBuffer();
     } catch (JsonProcessingException e) {
-      System.err.println("Error committing translation: " + e.getMessage());
+      Logger.error(log, "Error committing translation", e);
     }
   }
 
@@ -185,7 +188,7 @@ public class Realtime {
       Map<String, Object> clearEvent = Map.of("type", "input_audio_buffer.clear");
       send(mapper.writeValueAsString(clearEvent));
     } catch (JsonProcessingException e) {
-      System.err.println("Error clearing buffer: " + e.getMessage());
+      Logger.error(log, "Error clearing buffer", e);
     }
   }
 

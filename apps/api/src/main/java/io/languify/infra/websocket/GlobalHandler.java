@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.languify.communication.conversation.controller.websocket.ConversationHandler;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
+import io.languify.infra.logging.Logger;
 import io.languify.infra.websocket.dto.WebSocketMessageDTO;
 import java.util.Objects;
 import lombok.NonNull;
@@ -24,9 +25,12 @@ public class GlobalHandler extends TextWebSocketHandler {
 
   @Override
   public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
-    log.info(
-        "WebSocket connection established: sessionId={}, {}",
+    Logger.info(
+        log,
+        "WebSocket connection established",
+        "sessionId",
         session.getId(),
+        "user",
         describeSessionOwner(session));
 
     super.afterConnectionEstablished(session);
@@ -35,11 +39,16 @@ public class GlobalHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status)
       throws Exception {
-    log.info(
-        "WebSocket connection closed: sessionId={}, status={} ({}), {}",
+    Logger.info(
+        log,
+        "WebSocket connection closed",
+        "sessionId",
         session.getId(),
+        "statusCode",
         status.getCode(),
+        "reason",
         status.getReason(),
+        "user",
         describeSessionOwner(session));
 
     super.afterConnectionClosed(session, status);
@@ -62,12 +71,16 @@ public class GlobalHandler extends TextWebSocketHandler {
       String segment = segments[1];
       conversationHandler.handleSegment(segment, dto.getData(), session);
     } catch (Exception ex) {
-      log.error(
-          "WebSocket message error: sessionId={}, payload={}, {}",
+      Logger.error(
+          log,
+          "WebSocket message error",
+          ex,
+          "sessionId",
           session.getId(),
+          "payload",
           payload,
-          describeSessionOwner(session),
-          ex);
+          "user",
+          describeSessionOwner(session));
 
       throw ex;
     }
@@ -76,13 +89,14 @@ public class GlobalHandler extends TextWebSocketHandler {
   @Override
   public void handleTransportError(
       @NonNull WebSocketSession session, @NonNull Throwable exception) throws Exception {
-    log.error(
-        "WebSocket transport error: sessionId={}, {}, message={}",
+    Logger.error(
+        log,
+        "WebSocket transport error",
+        exception,
+        "sessionId",
         session.getId(),
-        describeSessionOwner(session),
-        exception.getMessage(),
-        exception);
-
+        "user",
+        describeSessionOwner(session));
     super.handleTransportError(session, exception);
   }
 
@@ -93,6 +107,6 @@ public class GlobalHandler extends TextWebSocketHandler {
     }
 
     User user = s.getUser();
-    return "userId=" + user.getId().toString() + ", email=" + user.getEmail();
+    return "userId=" + user.getId() + ", email=" + user.getEmail();
   }
 }

@@ -3,12 +3,15 @@ package io.languify.infra.websocket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.languify.identity.auth.model.Session;
+import io.languify.infra.logging.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+@Slf4j
 public abstract class Handler {
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -34,7 +37,16 @@ public abstract class Handler {
       message.put("data", d);
       session.sendMessage(new TextMessage(this.mapper.writeValueAsString(message)));
     } catch (Exception e) {
-      // Empty
+      Logger.error(
+          log,
+          "Failed to emit WebSocket message",
+          e,
+          "event",
+          event,
+          "userId",
+          userId,
+          "sessionId",
+          session.getId());
     }
   }
 }
