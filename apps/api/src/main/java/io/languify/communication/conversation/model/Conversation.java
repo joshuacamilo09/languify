@@ -2,6 +2,8 @@ package io.languify.communication.conversation.model;
 
 import io.languify.identity.user.model.User;
 import jakarta.persistence.*;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
@@ -28,7 +30,7 @@ public class Conversation {
   private String toLanguage;
 
   @Column(nullable = false)
-  private LocalDate createdAt;
+  private Instant createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
@@ -37,6 +39,6 @@ public class Conversation {
 
   @PrePersist
   public void prePersist() {
-    this.createdAt = LocalDate.now();
+    this.createdAt = Instant.now();
   }
 }

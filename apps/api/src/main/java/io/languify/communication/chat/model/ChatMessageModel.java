@@ -1,6 +1,8 @@
 package io.languify.communication.chat.model;
 
 import jakarta.persistence.*;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
@@ -27,7 +29,7 @@ public class ChatMessageModel {
   private ChatMessageStatus status;
 
   @Column(nullable = false)
-  private LocalDate createdAt;
+  private Instant createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "chat_id", nullable = false)
@@ -36,6 +38,6 @@ public class ChatMessageModel {
 
   @PrePersist
   private void prePersist() {
-    this.createdAt = LocalDate.now();
+    this.createdAt = Instant.now();
   }
 }

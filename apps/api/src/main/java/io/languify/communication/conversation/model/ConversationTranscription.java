@@ -1,6 +1,8 @@
 package io.languify.communication.conversation.model;
 
 import jakarta.persistence.*;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
@@ -21,7 +23,7 @@ public class ConversationTranscription {
   @Column private String translatedTranscript;
 
   @Column(nullable = false)
-  private LocalDate createdAt;
+  private Instant createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "conversation_id", nullable = false)
@@ -30,6 +32,6 @@ public class ConversationTranscription {
 
   @PrePersist
   public void prePersist() {
-    this.createdAt = LocalDate.now();
+    this.createdAt = Instant.now();
   }
 }
