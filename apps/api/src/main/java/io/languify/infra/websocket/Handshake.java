@@ -49,7 +49,7 @@ public class Handshake implements HandshakeInterceptor {
 
     String cleaned = token.replace("Bearer ", "");
 
-    if (this.jwt.isValid(cleaned)) {
+    if (this.jwt.isInvalid(cleaned)) {
       return Optional.empty();
     }
 
