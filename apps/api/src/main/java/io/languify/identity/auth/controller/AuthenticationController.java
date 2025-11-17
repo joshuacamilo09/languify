@@ -4,14 +4,17 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import io.languify.identity.auth.dto.SignDTO;
 import io.languify.identity.auth.dto.SignWithGoogleDTO;
-import io.languify.identity.auth.dto.SignWithGoogleResponseDTO;
+import io.languify.identity.auth.dto.SignResponseDTO;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import io.languify.identity.user.service.UserService;
 import io.languify.infra.security.service.JwtService;
 import java.util.Collections;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +38,25 @@ class AuthenticationController {
     return ResponseEntity.ok(session);
   }
 
+  @PostMapping("/sign")
+  public ResponseEntity<SignResponseDTO> sign(@RequestBody SignDTO req) {
+      try {
+          User user = this.userRepository.findByEmail(req.getEmail()).orElse(null);
+
+          if (user == null) {
+              user = this.userService.createUser(req.getEmail(), req.getPassword(), null, null, null);
+          }
+
+          String token = this.jwt.createToken(user.getId());
+          return ResponseEntity.ok(new SignResponseDTO(token));
+      }
+      catch (Exception e){
+          return ResponseEntity.internalServerError().build();
+      }
+  }
+
   @PostMapping("/sign/google")
-  public ResponseEntity<SignWithGoogleResponseDTO> signWithGoogle(
+  public ResponseEntity<SignResponseDTO> signWithGoogle(
       @RequestBody SignWithGoogleDTO req) {
     try {
       GoogleIdTokenVerifier verifier =
@@ -61,10 +81,10 @@ class AuthenticationController {
       User user =
           userRepository
               .findByEmail(email)
-              .orElseGet(() -> this.userService.createUser(email, givenName, familyName, picture));
+              .orElseGet(() -> this.userService.createUser(email, null, givenName, familyName, picture));
 
-      String signed = jwt.createToken(user.getId().toString());
-      return ResponseEntity.ok(new SignWithGoogleResponseDTO(signed));
+      String signed = this.jwt.createToken(user.getId());
+      return ResponseEntity.ok(new SignResponseDTO(signed));
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }

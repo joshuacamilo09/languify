@@ -17,6 +17,8 @@ public class User {
   @Column(nullable = false, unique = true)
   private String email;
 
+  @Column private String password;
+
   @Column private String firstName;
 
   @Column private String lastName;

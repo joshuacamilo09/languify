@@ -3,10 +3,10 @@ package io.languify.identity.auth.dto;
 import lombok.Data;
 
 @Data
-public class SignWithGoogleResponseDTO {
+public class SignResponseDTO {
   private String token;
 
-  public SignWithGoogleResponseDTO(String token) {
+  public SignResponseDTO(String token) {
     this.token = token;
   }
 }
