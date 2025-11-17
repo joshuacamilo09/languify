@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ConversationTranscriptionService {
-  private ConversationTranscriptionRepository repository;
+  private final ConversationTranscriptionRepository repository;
 
   public ConversationTranscription createConversationTranscription(Conversation conversation) {
     ConversationTranscription transcription = new ConversationTranscription();
