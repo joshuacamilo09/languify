@@ -1,5 +1,6 @@
 package io.languify.communication.conversation.dto;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
@@ -10,14 +11,14 @@ public class GetConversationTranscriptionsDTO {
   private UUID conversationId;
   private String originalTranscription;
   private String translatedTranscription;
-  private LocalDate createdAt;
+  private Instant createdAt;
 
   public GetConversationTranscriptionsDTO(
       UUID id,
       UUID conversationId,
       String originalTranscription,
       String translatedTranscription,
-      LocalDate createdAt) {
+      Instant createdAt) {
     this.id = id;
     this.conversationId = conversationId;
     this.originalTranscription = originalTranscription;
