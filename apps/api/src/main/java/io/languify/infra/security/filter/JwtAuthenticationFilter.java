@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String token = bearer.substring(7);
 
     try {
-      if (!jwt.isValid(token)) {
+      if (jwt.isValid(token)) {
         chain.doFilter(req, res);
         return;
       }

@@ -31,8 +31,7 @@ public class Realtime {
     WebSocket.Builder builder =
         client
             .newWebSocketBuilder()
-            .header("Authorization", "Bearer " + this.REALTIME_SECRET)
-            .header("OpenAI-Beta", "realtime=v1");
+            .header("Authorization", "Bearer " + this.REALTIME_SECRET);
 
     this.socket =
         builder
