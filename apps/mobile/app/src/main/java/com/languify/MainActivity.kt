@@ -19,6 +19,7 @@ import com.languify.infra.api.RetrofitClient
 import com.languify.infra.navigation.AppNavigation
 import com.languify.infra.navigation.Screen
 import com.languify.infra.security.TokenStorage
+import com.languify.infra.websocket.WebSocketService
 import com.languify.ui.theme.LanguifyTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,7 +32,8 @@ class MainActivity : ComponentActivity() {
     val authRepository = ApiAuthRepository(api, tokenStorage)
     val viewModelFactory = SignViewModelFactory(authRepository)
 
-    val authService = AuthService(tokenStorage)
+    val webSocketService = WebSocketService(tokenStorage)
+    val authService = AuthService(tokenStorage, webSocketService)
 
     setContent {
       LanguifyTheme {
@@ -42,6 +44,8 @@ class MainActivity : ComponentActivity() {
           LaunchedEffect(Unit) {
             val isAuthenticated = authService.isAuthenticated()
             startDestination = if (isAuthenticated) Screen.Home.route else Screen.Login.route
+
+            if (isAuthenticated) authService.onSign()
             loading = false
           }
 

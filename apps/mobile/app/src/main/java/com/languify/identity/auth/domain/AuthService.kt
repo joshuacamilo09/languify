@@ -1,9 +1,13 @@
 package com.languify.identity.auth.domain
 
 import com.languify.infra.security.TokenStorage
+import com.languify.infra.websocket.WebSocketService
 import kotlinx.coroutines.flow.first
 
-class AuthService(private val tokenStorage: TokenStorage) {
+class AuthService(
+  private val tokenStorage: TokenStorage,
+  private val webSocketService: WebSocketService
+) {
   suspend fun getToken(): String? {
     return tokenStorage.token.first()
   }
@@ -13,7 +17,12 @@ class AuthService(private val tokenStorage: TokenStorage) {
     return token != null
   }
 
+  suspend fun onSign() {
+    webSocketService.connect()
+  }
+
   suspend fun signOut() {
+    webSocketService.disconnect()
     tokenStorage.clearToken()
   }
 }

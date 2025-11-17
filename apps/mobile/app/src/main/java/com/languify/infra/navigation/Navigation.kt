@@ -31,7 +31,12 @@ fun AppNavigation(
     composable(Screen.Login.route) {
       SignScreen(
         factory = signViewModelFactory,
-        onSuccess = { navController.navigate(Screen.Home.route) { popUpTo(0) } },
+        onSuccess = {
+          scope.launch {
+            authService.onSign()
+            navController.navigate(Screen.Home.route) { popUpTo(0) }
+          }
+        },
       )
     }
 
