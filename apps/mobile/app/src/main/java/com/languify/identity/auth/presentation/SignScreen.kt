@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.languify.identity.auth.domain.SignStatus
@@ -83,6 +84,15 @@ fun SignForm(
       visualTransformation = PasswordVisualTransformation(),
       singleLine = true,
     )
+
+    if (!state.error.isNullOrBlank()) {
+      Text(
+        text = state.error,
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
 
     Button(onClick = onLoginClick, modifier = Modifier.fillMaxWidth()) {
       if (loading) {

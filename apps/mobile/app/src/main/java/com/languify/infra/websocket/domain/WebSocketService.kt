@@ -1,6 +1,8 @@
-package com.languify.infra.websocket
+package com.languify.infra.websocket.domain
 
 import com.languify.infra.security.TokenStorage
+import com.languify.infra.websocket.WebSocketClient
+import com.languify.infra.websocket.WebSocketEvent
 import kotlinx.coroutines.flow.Flow
 
 class WebSocketService(private val tokenStorage: TokenStorage) {
@@ -11,7 +13,7 @@ class WebSocketService(private val tokenStorage: TokenStorage) {
 
   suspend fun connect() {
     disconnect()
-    
+
     client = WebSocketClient(tokenStorage)
     client?.connect()
   }

@@ -13,13 +13,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.languify.identity.auth.data.ApiAuthRepository
+import kotlinx.coroutines.launch
 import com.languify.identity.auth.domain.AuthService
 import com.languify.identity.auth.presentation.SignViewModelFactory
 import com.languify.infra.api.RetrofitClient
+import com.languify.infra.health.domain.HealthService
 import com.languify.infra.navigation.AppNavigation
 import com.languify.infra.navigation.Screen
 import com.languify.infra.security.TokenStorage
-import com.languify.infra.websocket.WebSocketService
+import com.languify.infra.websocket.domain.WebSocketService
+import com.languify.infra.health.presentation.ErrorScreen
 import com.languify.ui.theme.LanguifyTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,37 +31,65 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
 
     val tokenStorage = TokenStorage(applicationContext)
-    val api = RetrofitClient.create(tokenStorage)
-    val authRepository = ApiAuthRepository(api, tokenStorage)
+
+    val authApi = RetrofitClient.createAuthApi(tokenStorage)
+    val healthApi = RetrofitClient.createHealthApi()
+
+    val authRepository = ApiAuthRepository(authApi, tokenStorage)
     val viewModelFactory = SignViewModelFactory(authRepository)
 
     val webSocketService = WebSocketService(tokenStorage)
     val authService = AuthService(tokenStorage, webSocketService)
+    val healthService = HealthService(healthApi)
 
     setContent {
       LanguifyTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           var loading by remember { mutableStateOf(true) }
+          var healthy by remember { mutableStateOf(false) }
           var startDestination by remember { mutableStateOf(Screen.Login.route) }
+          val scope = rememberCoroutineScope()
 
-          LaunchedEffect(Unit) {
-            val isAuthenticated = authService.isAuthenticated()
-            startDestination = if (isAuthenticated) Screen.Home.route else Screen.Login.route
+          fun performHealthCheck() {
+            scope.launch {
+              loading = true
+              healthy = false
 
-            if (isAuthenticated) authService.onSign()
-            loading = false
+              val isHealthy = healthService.checkHealth()
+
+              if (!isHealthy) {
+                loading = false
+                return@launch
+              }
+
+              healthy = true
+
+              val isAuthenticated = authService.isAuthenticated()
+              startDestination = if (isAuthenticated) Screen.Home.route else Screen.Login.route
+
+              if (isAuthenticated) authService.onSign()
+              loading = false
+            }
           }
 
-          if (loading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-              CircularProgressIndicator()
+          LaunchedEffect(Unit) { performHealthCheck() }
+
+          when {
+            loading -> {
+              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+              }
             }
-          } else {
-            AppNavigation(
-              authService = authService,
-              signViewModelFactory = viewModelFactory,
-              startDestination = startDestination,
-            )
+            !healthy -> {
+              ErrorScreen(onRetry = { performHealthCheck() })
+            }
+            else -> {
+              AppNavigation(
+                authService = authService,
+                signViewModelFactory = viewModelFactory,
+                startDestination = startDestination,
+              )
+            }
           }
         }
       }

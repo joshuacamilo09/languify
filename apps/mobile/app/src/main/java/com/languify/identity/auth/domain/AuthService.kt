@@ -1,7 +1,7 @@
 package com.languify.identity.auth.domain
 
 import com.languify.infra.security.TokenStorage
-import com.languify.infra.websocket.WebSocketService
+import com.languify.infra.websocket.domain.WebSocketService
 import kotlinx.coroutines.flow.first
 
 class AuthService(

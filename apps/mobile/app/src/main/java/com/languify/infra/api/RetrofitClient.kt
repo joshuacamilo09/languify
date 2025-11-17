@@ -1,9 +1,11 @@
 package com.languify.infra.api
 
 import com.languify.identity.auth.data.AuthApi
+import com.languify.infra.health.data.HealthApi
 import com.languify.infra.security.TokenStorage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.TimeUnit
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,21 +28,39 @@ class AuthInterceptor(private val tokenStorage: TokenStorage) : Interceptor {
 object RetrofitClient {
   private const val BASE_URL = "http://10.0.2.2:8080"
 
-  fun create(tokenStorage: TokenStorage): AuthApi {
+  private fun buildClient(tokenStorage: TokenStorage? = null): OkHttpClient {
     val loggingInterceptor =
       HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
-    val client =
+    val builder =
       OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor(tokenStorage))
         .addInterceptor(loggingInterceptor)
-        .build()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
 
+    if (tokenStorage != null) {
+      builder.addInterceptor(AuthInterceptor(tokenStorage))
+    }
+
+    return builder.build()
+  }
+
+  fun createAuthApi(tokenStorage: TokenStorage): AuthApi {
     return Retrofit.Builder()
       .baseUrl(BASE_URL)
-      .client(client)
+      .client(buildClient(tokenStorage))
       .addConverterFactory(GsonConverterFactory.create())
       .build()
       .create(AuthApi::class.java)
+  }
+
+  fun createHealthApi(): HealthApi {
+    return Retrofit.Builder()
+      .baseUrl(BASE_URL)
+      .client(buildClient())
+      .addConverterFactory(GsonConverterFactory.create())
+      .build()
+      .create(HealthApi::class.java)
   }
 }
