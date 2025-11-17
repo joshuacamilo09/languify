@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(onSignOut: () -> Unit) {
+fun HomeScreen(onSignOut: () -> Unit, onOpenConversation: () -> Unit) {
   Column(
     modifier = Modifier.fillMaxSize().padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -21,6 +21,12 @@ fun HomeScreen(onSignOut: () -> Unit) {
     Text(text = "You're logged in!", style = MaterialTheme.typography.bodyLarge)
 
     Spacer(modifier = Modifier.height(32.dp))
+
+    Button(onClick = onOpenConversation, modifier = Modifier.fillMaxWidth()) {
+      Text("Start Real-Time Translation")
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
 
     Button(onClick = onSignOut) { Text("Logout") }
   }

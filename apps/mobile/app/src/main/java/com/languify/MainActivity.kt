@@ -12,18 +12,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.languify.communication.conversation.domain.ConversationService
+import com.languify.communication.conversation.presentation.ConversationViewModelFactory
 import com.languify.identity.auth.data.ApiAuthRepository
-import kotlinx.coroutines.launch
 import com.languify.identity.auth.domain.AuthService
 import com.languify.identity.auth.presentation.SignViewModelFactory
 import com.languify.infra.api.RetrofitClient
 import com.languify.infra.health.domain.HealthService
+import com.languify.infra.health.presentation.ErrorScreen
 import com.languify.infra.navigation.AppNavigation
 import com.languify.infra.navigation.Screen
 import com.languify.infra.security.TokenStorage
 import com.languify.infra.websocket.domain.WebSocketService
-import com.languify.infra.health.presentation.ErrorScreen
 import com.languify.ui.theme.LanguifyTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,16 +33,18 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
 
     val tokenStorage = TokenStorage(applicationContext)
+    val webSocketService = WebSocketService(tokenStorage)
+
+    val healthApi = RetrofitClient.createHealthApi()
+    val healthService = HealthService(healthApi)
 
     val authApi = RetrofitClient.createAuthApi(tokenStorage)
-    val healthApi = RetrofitClient.createHealthApi()
-
     val authRepository = ApiAuthRepository(authApi, tokenStorage)
-    val viewModelFactory = SignViewModelFactory(authRepository)
-
-    val webSocketService = WebSocketService(tokenStorage)
     val authService = AuthService(tokenStorage, webSocketService)
-    val healthService = HealthService(healthApi)
+    val signViewModelFactory = SignViewModelFactory(authRepository)
+
+    val conversationService = ConversationService(webSocketService)
+    val conversationViewModelFactory = ConversationViewModelFactory(conversationService)
 
     setContent {
       LanguifyTheme {
@@ -84,9 +88,14 @@ class MainActivity : ComponentActivity() {
               ErrorScreen(onRetry = { performHealthCheck() })
             }
             else -> {
+              LaunchedEffect(Unit) {
+                webSocketService.events.collect { event -> conversationService.handleWebSocketEvent(event) }
+              }
+
               AppNavigation(
                 authService = authService,
-                signViewModelFactory = viewModelFactory,
+                signViewModelFactory = signViewModelFactory,
+                conversationViewModelFactory = conversationViewModelFactory,
                 startDestination = startDestination,
               )
             }

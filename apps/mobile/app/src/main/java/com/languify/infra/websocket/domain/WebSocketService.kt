@@ -4,12 +4,13 @@ import com.languify.infra.security.TokenStorage
 import com.languify.infra.websocket.WebSocketClient
 import com.languify.infra.websocket.WebSocketEvent
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 class WebSocketService(private val tokenStorage: TokenStorage) {
   private var client: WebSocketClient? = null
 
   val events: Flow<WebSocketEvent>
-    get() = client?.events ?: throw IllegalStateException("WebSocket not connected")
+    get() = client?.events ?: emptyFlow()
 
   suspend fun connect() {
     disconnect()
