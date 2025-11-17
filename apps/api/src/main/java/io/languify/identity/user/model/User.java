@@ -1,7 +1,7 @@
 package io.languify.identity.user.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.Data;
 
@@ -25,10 +25,10 @@ public class User {
 
   @Column private String image;
 
-  @Column private LocalDate createdAt;
+  @Column private Instant createdAt;
 
   @PrePersist
   public void prePersist() {
-    this.createdAt = LocalDate.now();
+    this.createdAt = Instant.now();
   }
 }
