@@ -4,44 +4,60 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.languify.identity.auth.data.ApiAuthRepository
+import com.languify.identity.auth.domain.AuthService
+import com.languify.identity.auth.presentation.SignViewModelFactory
+import com.languify.infra.api.RetrofitClient
+import com.languify.infra.navigation.AppNavigation
+import com.languify.infra.navigation.Screen
+import com.languify.infra.security.TokenStorage
 import com.languify.ui.theme.LanguifyTheme
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            LanguifyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+
+    val tokenStorage = TokenStorage(applicationContext)
+    val api = RetrofitClient.create(tokenStorage)
+    val authRepository = ApiAuthRepository(api, tokenStorage)
+    val viewModelFactory = SignViewModelFactory(authRepository)
+
+    val authService = AuthService(tokenStorage)
+
+    setContent {
+      LanguifyTheme {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+          var loading by remember { mutableStateOf(true) }
+          var startDestination by remember { mutableStateOf(Screen.Login.route) }
+
+          LaunchedEffect(Unit) {
+            val isAuthenticated = authService.isAuthenticated()
+            startDestination = if (isAuthenticated) Screen.Home.route else Screen.Login.route
+            loading = false
+          }
+
+          if (loading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
             }
+          } else {
+            AppNavigation(
+              authService = authService,
+              signViewModelFactory = viewModelFactory,
+              startDestination = startDestination,
+            )
+          }
         }
+      }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LanguifyTheme {
-        Greeting("Android")
-    }
+  }
 }
