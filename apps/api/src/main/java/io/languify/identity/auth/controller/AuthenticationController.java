@@ -40,35 +40,35 @@ class AuthenticationController {
 
   @PostMapping("/sign")
   public ResponseEntity<SignResponseDTO> sign(@RequestBody SignDTO req) {
-      try {
-          User user = this.userRepository.findByEmail(req.getEmail()).orElse(null);
+      User user = this.userRepository.findByEmail(req.getEmail()).orElse(null);
 
-          if (user == null) {
-              user = this.userService.createUser(req.getEmail(), req.getPassword(), null, null, null);
-          }
+      if (user == null) {
+          user = this.userService.createUser(req.getEmail(), req.getPassword(), null, null, null);
+      }
 
-          String token = this.jwt.createToken(user.getId());
-          return ResponseEntity.ok(new SignResponseDTO(token));
-      }
-      catch (Exception e){
-          return ResponseEntity.internalServerError().build();
-      }
+      String token = this.jwt.createToken(user.getId());
+      return ResponseEntity.ok(new SignResponseDTO(token));
   }
 
   @PostMapping("/sign/google")
   public ResponseEntity<SignResponseDTO> signWithGoogle(
       @RequestBody SignWithGoogleDTO req) {
-    try {
       GoogleIdTokenVerifier verifier =
-          new GoogleIdTokenVerifier.Builder(
-                  new NetHttpTransport(), GsonFactory.getDefaultInstance())
-              .setAudience(Collections.singletonList(clientId))
-              .build();
+              new GoogleIdTokenVerifier.Builder(
+                      new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                      .setAudience(Collections.singletonList(clientId))
+                      .build();
 
-      GoogleIdToken token = verifier.verify(req.getIdToken());
+      GoogleIdToken token = null;
+
+      try {
+           token = verifier.verify(req.getIdToken());
+      } catch (Exception e){
+        // Empty
+      }
 
       if (token == null) {
-        return ResponseEntity.badRequest().build();
+          return ResponseEntity.badRequest().build();
       }
 
       GoogleIdToken.Payload payload = token.getPayload();
@@ -79,14 +79,11 @@ class AuthenticationController {
       String picture = (String) payload.get("picture");
 
       User user =
-          userRepository
-              .findByEmail(email)
-              .orElseGet(() -> this.userService.createUser(email, null, givenName, familyName, picture));
+              userRepository
+                      .findByEmail(email)
+                      .orElseGet(() -> this.userService.createUser(email, null, givenName, familyName, picture));
 
       String signed = this.jwt.createToken(user.getId());
       return ResponseEntity.ok(new SignResponseDTO(signed));
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
-    }
   }
 }

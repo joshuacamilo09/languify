@@ -49,17 +49,41 @@ public class GlobalHandler extends TextWebSocketHandler {
   protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message)
       throws Exception {
     String payload = message.getPayload();
-    WebSocketMessageDTO dto = this.mapper.readValue(payload, WebSocketMessageDTO.class);
+    try {
+      WebSocketMessageDTO dto = this.mapper.readValue(payload, WebSocketMessageDTO.class);
 
-    String[] segments = dto.getEvent().split(":", 2);
-    String resource = segments[0];
+      String[] segments = dto.getEvent().split(":", 2);
+      String resource = segments[0];
 
-    if (!Objects.equals(resource, "conversation")) {
-      return;
+      if (!Objects.equals(resource, "conversation")) {
+        return;
+      }
+
+      String segment = segments[1];
+      conversationHandler.handleSegment(segment, dto.getData(), session);
+    } catch (Exception ex) {
+      log.error(
+          "WebSocket message error: sessionId={}, payload={}, {}",
+          session.getId(),
+          payload,
+          describeSessionOwner(session),
+          ex);
+
+      throw ex;
     }
+  }
 
-    String segment = segments[1];
-    conversationHandler.handleSegment(segment, dto.getData(), session);
+  @Override
+  public void handleTransportError(
+      @NonNull WebSocketSession session, @NonNull Throwable exception) throws Exception {
+    log.error(
+        "WebSocket transport error: sessionId={}, {}, message={}",
+        session.getId(),
+        describeSessionOwner(session),
+        exception.getMessage(),
+        exception);
+
+    super.handleTransportError(session, exception);
   }
 
   private String describeSessionOwner(WebSocketSession session) {
