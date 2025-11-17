@@ -40,7 +40,7 @@ fun AppNavigation(
         factory = signViewModelFactory,
         onSuccess = {
           scope.launch {
-            authService.onSign()
+            authService.onSign(scope)
             navController.navigate(Screen.Home.route) { popUpTo(0) }
           }
         },

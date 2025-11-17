@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
               val isAuthenticated = authService.isAuthenticated()
               startDestination = if (isAuthenticated) Screen.Home.route else Screen.Login.route
 
-              if (isAuthenticated) authService.onSign()
+              if (isAuthenticated) authService.onSign(scope)
               loading = false
             }
           }

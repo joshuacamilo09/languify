@@ -1,5 +1,8 @@
 package com.languify.communication.conversation.presentation
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
@@ -10,13 +13,32 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.languify.communication.conversation.domain.RecordingState
 import com.languify.communication.conversation.domain.TranslationState
 
 @Composable
 fun ConversationScreen(viewModel: ConversationViewModel) {
   val conversation by viewModel.conversation.collectAsState()
+  val context = LocalContext.current
+
+  val permissionLauncher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.RequestPermission()
+  ) { isGranted ->
+    if (isGranted) viewModel.startRecording()
+  }
+
+  val onStartRecording = {
+    val hasPermission = ContextCompat.checkSelfPermission(
+      context,
+      Manifest.permission.RECORD_AUDIO
+    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+    if (hasPermission) viewModel.startRecording()
+    else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+  }
 
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     if (conversation == null) {
@@ -27,7 +49,7 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
         toLanguage = conversation!!.toLanguage,
         recordingState = conversation!!.recordingState,
         translationState = conversation!!.translationState,
-        onStartRecording = { viewModel.startRecording() },
+        onStartRecording = onStartRecording,
         onStopRecording = { viewModel.stopRecording() },
         onEndConversation = { viewModel.endConversation() }
       )
@@ -148,7 +170,8 @@ fun RecordingButton(
           onClick = onStartRecording,
           modifier = Modifier.size(80.dp),
           containerColor =
-            if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+            if (isEnabled) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.surfaceVariant
         ) {
           Icon(
             Icons.Default.Mic,
