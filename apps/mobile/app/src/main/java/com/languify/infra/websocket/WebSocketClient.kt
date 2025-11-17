@@ -1,6 +1,8 @@
 package com.languify.infra.websocket
 
+import com.google.gson.Gson
 import com.languify.infra.security.TokenStorage
+import com.languify.infra.websocket.domain.WebSocketMessage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -24,6 +26,7 @@ class WebSocketClient(
 ) {
   private var webSocket: WebSocket? = null
   private val eventChannel = Channel<WebSocketEvent>(Channel.BUFFERED)
+  private val gson = Gson()
 
   val events: Flow<WebSocketEvent> = eventChannel.receiveAsFlow()
 
@@ -42,8 +45,10 @@ class WebSocketClient(
     webSocket = client.newWebSocket(request, createWebSocketListener())
   }
 
-  fun send(message: String) {
-    webSocket?.send(message)
+  fun send(event: String, data: Any? = null) {
+    val message = WebSocketMessage(event, data)
+    val json = gson.toJson(message)
+    webSocket?.send(json)
   }
 
   fun close() {

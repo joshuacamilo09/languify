@@ -18,8 +18,8 @@ class WebSocketService(private val tokenStorage: TokenStorage) {
     client?.connect()
   }
 
-  fun send(message: String) {
-    client?.send(message) ?: throw IllegalStateException("WebSocket not connected")
+  fun send(event: String, data: Any? = null) {
+    client?.send(event, data) ?: throw IllegalStateException("WebSocket not connected")
   }
 
   fun disconnect() {
