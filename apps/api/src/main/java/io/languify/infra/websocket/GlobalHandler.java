@@ -58,6 +58,17 @@ public class GlobalHandler extends TextWebSocketHandler {
   protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message)
       throws Exception {
     String payload = message.getPayload();
+
+    Logger.info(
+        log,
+        "WebSocket payload received",
+        "sessionId",
+        session.getId(),
+        "payload",
+        payload,
+        "user",
+        describeSessionOwner(session));
+
     try {
       WebSocketMessageDTO dto = this.mapper.readValue(payload, WebSocketMessageDTO.class);
 

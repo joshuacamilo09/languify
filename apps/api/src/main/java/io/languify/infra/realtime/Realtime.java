@@ -50,6 +50,7 @@ public class Realtime {
                   @Override
                   public CompletionStage<?> onText(
                       WebSocket socket, CharSequence data, boolean last) {
+                    Logger.info(log, "Realtime payload received", "payload", data.toString());
                     try {
                       JsonNode event = mapper.readTree(data.toString());
                       handleEvent(event);

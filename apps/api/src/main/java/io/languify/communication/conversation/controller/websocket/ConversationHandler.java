@@ -93,6 +93,7 @@ public class ConversationHandler extends Handler {
               userId,
               "sessionId",
               session.getId());
+
           this.emit("conversation:translate:error", null, userId, session);
         }
 
@@ -130,9 +131,7 @@ public class ConversationHandler extends Handler {
 
               @Override
               public void onOriginalTranscription(String transcript) {
-                if (transcript == null) {
-                  return;
-                }
+                if (transcript == null) return;
 
                 transcription.setOriginalTranscript(transcript);
                 transcriptionRepository.save(transcription);
@@ -156,6 +155,7 @@ public class ConversationHandler extends Handler {
                       java.util.Map.of("state", "reproducing"),
                       userId,
                       session);
+
                   firstDelta = false;
                 }
 
