@@ -59,18 +59,18 @@ public class GlobalHandler extends TextWebSocketHandler {
       throws Exception {
     String payload = message.getPayload();
 
-    Logger.info(
-        log,
-        "WebSocket payload received",
-        "sessionId",
-        session.getId(),
-        "payload",
-        payload,
-        "user",
-        describeSessionOwner(session));
-
     try {
       WebSocketMessageDTO dto = this.mapper.readValue(payload, WebSocketMessageDTO.class);
+
+      Logger.info(
+          log,
+          "WebSocket event received",
+          "sessionId",
+          session.getId(),
+          "event",
+          dto.getEvent(),
+          "user",
+          describeSessionOwner(session));
 
       String[] segments = dto.getEvent().split(":", 2);
       String resource = segments[0];

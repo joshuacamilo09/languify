@@ -309,7 +309,12 @@ public class ConversationHandler extends Handler {
                 firstDelta = true;
 
                 Optional<ConversationState> state = ConversationHandler.this.state.get(userId);
-                state.ifPresent(ConversationState::swapLanguages);
+
+                state.ifPresent(
+                    s -> {
+                      s.swapLanguages();
+                      s.getRealtime().clearBuffer();
+                    });
               }
             });
 
@@ -351,6 +356,17 @@ public class ConversationHandler extends Handler {
     }
 
     ConversationState state = optionalState.get();
+
+    Logger.info(
+        log,
+        "Processing audio data from client",
+        "userId",
+        userId,
+        "conversationId",
+        state.getConversation().getId(),
+        "audioDataLength",
+        data.getAudio() != null ? data.getAudio().length() : 0);
+
     state.getRealtime().appendAudio(data.getAudio());
   }
 
