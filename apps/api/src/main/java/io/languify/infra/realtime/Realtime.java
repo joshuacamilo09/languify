@@ -23,8 +23,8 @@ public class Realtime {
 
   private final RealtimeEventHandler handler;
   private final ObjectMapper mapper = new ObjectMapper();
-
   private final StringBuilder messageBuffer = new StringBuilder();
+
   private int audioChunksAppended = 0;
   private long totalPcmBytes = 0;
   private boolean awaitingCommitAck = false;
@@ -167,7 +167,6 @@ public class Realtime {
 
       case "response.audio.delta":
         if (event.has("delta")) this.handler.onAudioDelta(event.get("delta").asText());
-
         break;
 
       case "response.audio.done":
