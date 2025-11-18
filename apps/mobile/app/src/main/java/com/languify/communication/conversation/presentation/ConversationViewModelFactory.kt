@@ -3,6 +3,7 @@ package com.languify.communication.conversation.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.languify.communication.conversation.domain.ConversationService
+import com.languify.infra.audio.AudioPlayer
 import com.languify.infra.audio.AudioRecorder
 
 class ConversationViewModelFactory(private val conversationService: ConversationService) :
@@ -10,8 +11,9 @@ class ConversationViewModelFactory(private val conversationService: Conversation
   override fun <T : ViewModel> create(modelClass: Class<T>): T {
     if (modelClass.isAssignableFrom(ConversationViewModel::class.java)) {
       val audioRecorder = AudioRecorder()
+      val audioPlayer = AudioPlayer()
       @Suppress("UNCHECKED_CAST")
-      return ConversationViewModel(conversationService, audioRecorder) as T
+      return ConversationViewModel(conversationService, audioRecorder, audioPlayer) as T
     }
 
     throw IllegalArgumentException("Unknown ViewModel class")

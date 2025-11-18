@@ -3,9 +3,9 @@ package com.languify.infra.api
 import com.languify.identity.auth.data.AuthApi
 import com.languify.infra.health.data.HealthApi
 import com.languify.infra.security.TokenStorage
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.util.concurrent.TimeUnit
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

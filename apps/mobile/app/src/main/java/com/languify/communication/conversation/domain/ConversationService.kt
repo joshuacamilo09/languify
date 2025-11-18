@@ -1,5 +1,6 @@
 package com.languify.communication.conversation.domain
 
+import android.util.Base64
 import com.google.gson.Gson
 import com.languify.communication.conversation.data.ProcessConversationDataDTO
 import com.languify.communication.conversation.data.StartConversationDTO
@@ -17,11 +18,23 @@ class ConversationService(private val webSocketService: WebSocketService) {
   private val _audioDelta = MutableStateFlow<String?>(null)
   val audioDelta: StateFlow<String?> = _audioDelta.asStateFlow()
 
+  fun clearAudioDelta() {
+    _audioDelta.value = null
+  }
+
   private val _isStarting = MutableStateFlow(false)
   val isStarting: StateFlow<Boolean> = _isStarting.asStateFlow()
 
+  private val audioChunks = mutableListOf<String>()
+
+  private var pendingFromLanguage: String = "pt"
+  private var pendingToLanguage: String = "en"
+
   fun startConversation(fromLanguage: String = "pt", toLanguage: String = "en") {
     _isStarting.value = true
+    pendingFromLanguage = fromLanguage
+    pendingToLanguage = toLanguage
+
     val dto = StartConversationDTO(fromLanguage, toLanguage)
     webSocketService.send("conversation:start", dto)
   }
@@ -33,6 +46,10 @@ class ConversationService(private val webSocketService: WebSocketService) {
 
   fun commitAudio() {
     webSocketService.send("conversation:translate")
+  }
+
+  fun swapLanguages() {
+    webSocketService.send("conversation:swap")
   }
 
   fun closeConversation() {
@@ -55,12 +72,13 @@ class ConversationService(private val webSocketService: WebSocketService) {
       when (eventName) {
         "conversation:start:success" -> {
           _isStarting.value = false
-          _conversation.value = ActiveConversation(
-            fromLanguage = "pt",
-            toLanguage = "en",
-            recordingState = RecordingState.RECORDING,
-            translationState = TranslationState.READY
-          )
+          _conversation.value =
+            ActiveConversation(
+              fromLanguage = pendingFromLanguage,
+              toLanguage = pendingToLanguage,
+              recordingState = RecordingState.RECORDING,
+              translationState = TranslationState.IDLE,
+            )
         }
         "conversation:translate:state" -> {
           val data = json["data"] as? Map<*, *>
@@ -78,14 +96,39 @@ class ConversationService(private val webSocketService: WebSocketService) {
           val current = _conversation.value
           if (current == null) return
 
-          var updated = current.copy(translationState = translationState)
-          if (translationState == TranslationState.READY) updated = updated.copy(fromLanguage = current.toLanguage, toLanguage = current.fromLanguage)
-          _conversation.value = updated
+          _conversation.value = current.copy(translationState = translationState)
         }
         "conversation:data:delta" -> {
           val data = json["data"] as? Map<*, *>
           val audio = data?.get("audio") as? String
-          if (audio != null) _audioDelta.value = audio
+          if (audio != null) audioChunks.add(audio)
+        }
+
+        "conversation:data:done" -> {
+          if (audioChunks.isNotEmpty()) {
+            // Decode all base64 chunks to bytes, concatenate, then re-encode
+            val allBytes =
+              audioChunks
+                .flatMap { chunk -> Base64.decode(chunk, Base64.NO_WRAP).toList() }
+                .toByteArray()
+
+            val completeAudio = Base64.encodeToString(allBytes, Base64.NO_WRAP)
+            _audioDelta.value = completeAudio
+            audioChunks.clear()
+          }
+        }
+
+        "conversation:swap:success" -> {
+          val current = _conversation.value
+          if (current == null) return
+
+          _conversation.value =
+            current.copy(
+              fromLanguage = current.toLanguage,
+              toLanguage = current.fromLanguage,
+              recordingState = RecordingState.RECORDING,
+              translationState = TranslationState.IDLE,
+            )
         }
       }
     } catch (e: Exception) {

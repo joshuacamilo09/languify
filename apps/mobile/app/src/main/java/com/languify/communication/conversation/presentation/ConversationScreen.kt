@@ -25,17 +25,16 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
   val isStarting by viewModel.isStarting.collectAsState()
   val context = LocalContext.current
 
-  val permissionLauncher = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.RequestPermission()
-  ) { isGranted ->
-    if (isGranted) viewModel.startRecording()
-  }
+  val permissionLauncher =
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
+      isGranted ->
+      if (isGranted) viewModel.startRecording()
+    }
 
   val onStartRecording = {
-    val hasPermission = ContextCompat.checkSelfPermission(
-      context,
-      Manifest.permission.RECORD_AUDIO
-    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    val hasPermission =
+      ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+        android.content.pm.PackageManager.PERMISSION_GRANTED
 
     if (hasPermission) viewModel.startRecording()
     else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -43,10 +42,7 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
 
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     if (conversation == null) {
-      StartConversationView(
-        isStarting = isStarting,
-        onStart = { viewModel.startConversation() }
-      )
+      StartConversationView(isStarting = isStarting, onStart = { viewModel.startConversation() })
     } else {
       ActiveConversationView(
         fromLanguage = conversation!!.fromLanguage,
@@ -55,7 +51,7 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
         translationState = conversation!!.translationState,
         onStartRecording = onStartRecording,
         onStopRecording = { viewModel.stopRecording() },
-        onEndConversation = { viewModel.endConversation() }
+        onEndConversation = { viewModel.endConversation() },
       )
     }
   }
@@ -65,7 +61,7 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
 fun StartConversationView(isStarting: Boolean, onStart: () -> Unit) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(16.dp)
+    verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     Text("Start Real-Time Translation", style = MaterialTheme.typography.headlineMedium)
 
@@ -86,12 +82,12 @@ fun ActiveConversationView(
   translationState: TranslationState,
   onStartRecording: () -> Unit,
   onStopRecording: () -> Unit,
-  onEndConversation: () -> Unit
+  onEndConversation: () -> Unit,
 ) {
   Column(
     modifier = Modifier.fillMaxSize().padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(24.dp)
+    verticalArrangement = Arrangement.spacedBy(24.dp),
   ) {
     Text("Active Conversation", style = MaterialTheme.typography.headlineMedium)
 
@@ -105,12 +101,15 @@ fun ActiveConversationView(
       recordingState = recordingState,
       translationState = translationState,
       onStartRecording = onStartRecording,
-      onStopRecording = onStopRecording
+      onStopRecording = onStopRecording,
     )
 
     Spacer(modifier = Modifier.weight(1f))
 
-    Button(onClick = onEndConversation, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
+    Button(
+      onClick = onEndConversation,
+      colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+    ) {
       Text("End Conversation")
     }
   }
@@ -120,7 +119,7 @@ fun ActiveConversationView(
 fun LanguageIndicator(from: String, to: String) {
   Row(
     horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     Text(from.uppercase(), style = MaterialTheme.typography.titleLarge)
     Text("→", style = MaterialTheme.typography.titleLarge)
@@ -155,9 +154,10 @@ fun RecordingButton(
   recordingState: RecordingState,
   translationState: TranslationState,
   onStartRecording: () -> Unit,
-  onStopRecording: () -> Unit
+  onStopRecording: () -> Unit,
 ) {
-  val isEnabled = translationState == TranslationState.READY || recordingState == RecordingState.RECORDING
+  val isEnabled =
+    translationState == TranslationState.READY || recordingState == RecordingState.RECORDING
 
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
     when (recordingState) {
@@ -165,11 +165,19 @@ fun RecordingButton(
         FloatingActionButton(
           onClick = onStopRecording,
           containerColor = MaterialTheme.colorScheme.error,
-          modifier = Modifier.size(80.dp)
+          modifier = Modifier.size(80.dp),
         ) {
-          Icon(Icons.Default.Stop, contentDescription = "Stop Recording", modifier = Modifier.size(40.dp))
+          Icon(
+            Icons.Default.Stop,
+            contentDescription = "Stop Recording",
+            modifier = Modifier.size(40.dp),
+          )
         }
-        Text("Recording...", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+        Text(
+          "Recording...",
+          color = MaterialTheme.colorScheme.error,
+          modifier = Modifier.padding(top = 8.dp),
+        )
       }
       RecordingState.PROCESSING -> {
         CircularProgressIndicator(modifier = Modifier.size(80.dp))
@@ -181,13 +189,15 @@ fun RecordingButton(
           modifier = Modifier.size(80.dp),
           containerColor =
             if (isEnabled) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surfaceVariant
+            else MaterialTheme.colorScheme.surfaceVariant,
         ) {
           Icon(
             Icons.Default.Mic,
             contentDescription = "Start Recording",
             modifier = Modifier.size(40.dp),
-            tint = if (isEnabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+            tint =
+              if (isEnabled) MaterialTheme.colorScheme.onPrimary
+              else MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }

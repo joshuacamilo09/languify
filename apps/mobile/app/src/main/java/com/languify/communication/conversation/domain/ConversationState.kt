@@ -5,18 +5,18 @@ enum class TranslationState {
   LOADING,
   REPRODUCING,
   DONE,
-  READY
+  READY,
 }
 
 enum class RecordingState {
   IDLE,
   RECORDING,
-  PROCESSING
+  PROCESSING,
 }
 
 data class ActiveConversation(
   val fromLanguage: String,
   val toLanguage: String,
   val recordingState: RecordingState = RecordingState.IDLE,
-  val translationState: TranslationState = TranslationState.IDLE
+  val translationState: TranslationState = TranslationState.IDLE,
 )

@@ -4,13 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.languify.communication.conversation.domain.ConversationService
 import com.languify.communication.conversation.domain.RecordingState
+import com.languify.infra.audio.AudioPlayer
 import com.languify.infra.audio.AudioRecorder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ConversationViewModel(
   private val conversationService: ConversationService,
-  private val audioRecorder: AudioRecorder
+  private val audioRecorder: AudioRecorder,
+  private val audioPlayer: AudioPlayer,
 ) : ViewModel() {
 
   val conversation = conversationService.conversation
@@ -22,7 +25,19 @@ class ConversationViewModel(
   init {
     viewModelScope.launch {
       conversation.collect { conv ->
-        if (conv?.recordingState == RecordingState.RECORDING && recordingJob == null) startRecordingInternal()
+        if (conv?.recordingState == RecordingState.RECORDING && recordingJob == null)
+          startRecordingInternal()
+      }
+    }
+
+    viewModelScope.launch {
+      audioDelta.collect { audio ->
+        if (audio != null) {
+          audioPlayer.playAudio(audio) {
+            conversationService.clearAudioDelta()
+            conversationService.swapLanguages()
+          }
+        }
       }
     }
   }
@@ -37,14 +52,18 @@ class ConversationViewModel(
   }
 
   private fun startRecordingInternal() {
-    recordingJob = viewModelScope.launch {
-      try {
-        audioRecorder.startRecording { base64Chunk -> conversationService.sendAudioChunk(base64Chunk) }
-      } catch (e: Exception) {
-        e.printStackTrace()
-        conversationService.updateRecordingState(RecordingState.IDLE)
+    recordingJob =
+      viewModelScope.launch {
+        try {
+          audioRecorder.startRecording { base64Chunk ->
+            conversationService.sendAudioChunk(base64Chunk)
+          }
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          conversationService.updateRecordingState(RecordingState.IDLE)
+        }
       }
-    }
   }
 
   fun stopRecording() {
@@ -67,5 +86,6 @@ class ConversationViewModel(
   override fun onCleared() {
     super.onCleared()
     if (audioRecorder.isRecording()) audioRecorder.stopRecording()
+    if (audioPlayer.isPlaying()) audioPlayer.stop()
   }
 }

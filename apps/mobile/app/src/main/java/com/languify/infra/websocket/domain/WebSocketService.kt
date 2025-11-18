@@ -32,41 +32,42 @@ class WebSocketService(private val tokenStorage: TokenStorage) {
 
       if (autoReconnect && scope != null) startReconnectMonitoring(scope)
     } catch (e: Exception) {
-      if (autoReconnect && scope != null) scheduleReconnect(scope)
-      else throw e
+      if (autoReconnect && scope != null) scheduleReconnect(scope) else throw e
     }
   }
 
   private fun startReconnectMonitoring(scope: CoroutineScope) {
-    reconnectJob = scope.launch {
-      client?.events?.collect { event ->
-        when (event) {
-          is WebSocketEvent.OnFailure,
-          is WebSocketEvent.OnClosed -> if (shouldReconnect && isActive) scheduleReconnect(scope)
-          else -> {}
+    reconnectJob =
+      scope.launch {
+        client?.events?.collect { event ->
+          when (event) {
+            is WebSocketEvent.OnFailure,
+            is WebSocketEvent.OnClosed -> if (shouldReconnect && isActive) scheduleReconnect(scope)
+            else -> {}
+          }
         }
       }
-    }
   }
 
   private fun scheduleReconnect(scope: CoroutineScope, retryDelayMs: Long = 5000) {
     reconnectJob?.cancel()
 
-    reconnectJob = scope.launch {
-      while (shouldReconnect && isActive) {
-        delay(retryDelayMs)
+    reconnectJob =
+      scope.launch {
+        while (shouldReconnect && isActive) {
+          delay(retryDelayMs)
 
-        try {
-          client = WebSocketClient(tokenStorage)
-          client?.connect()
+          try {
+            client = WebSocketClient(tokenStorage)
+            client?.connect()
 
-          startReconnectMonitoring(scope)
-          break
-        } catch (e: Exception) {
-          e.printStackTrace()
+            startReconnectMonitoring(scope)
+            break
+          } catch (e: Exception) {
+            e.printStackTrace()
+          }
         }
       }
-    }
   }
 
   fun send(event: String, data: Any? = null) {

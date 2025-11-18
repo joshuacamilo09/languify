@@ -55,7 +55,7 @@ fun AppNavigation(
             navController.navigate(Screen.Login.route) { popUpTo(0) }
           }
         },
-        onOpenConversation = { navController.navigate(Screen.Conversation.route) }
+        onOpenConversation = { navController.navigate(Screen.Conversation.route) },
       )
     }
 

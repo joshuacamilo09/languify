@@ -22,7 +22,7 @@ sealed class WebSocketEvent {
 
 class WebSocketClient(
   private val tokenStorage: TokenStorage,
-  private val url: String = "ws://10.0.2.2:8080/ws"
+  private val url: String = "ws://10.0.2.2:8080/ws",
 ) {
   private var webSocket: WebSocket? = null
   private val eventChannel = Channel<WebSocketEvent>(Channel.BUFFERED)
@@ -36,9 +36,7 @@ class WebSocketClient(
     val request =
       Request.Builder()
         .url(url)
-        .apply {
-          if (token != null) addHeader("Authorization", "Bearer $token")
-        }
+        .apply { if (token != null) addHeader("Authorization", "Bearer $token") }
         .build()
 
     val client = OkHttpClient.Builder().build()

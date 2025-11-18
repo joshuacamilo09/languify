@@ -89,7 +89,9 @@ class MainActivity : ComponentActivity() {
             }
             else -> {
               LaunchedEffect(Unit) {
-                webSocketService.events.collect { event -> conversationService.handleWebSocketEvent(event) }
+                webSocketService.events.collect { event ->
+                  conversationService.handleWebSocketEvent(event)
+                }
               }
 
               AppNavigation(

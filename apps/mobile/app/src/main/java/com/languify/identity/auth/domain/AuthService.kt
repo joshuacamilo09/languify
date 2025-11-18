@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.first
 
 class AuthService(
   private val tokenStorage: TokenStorage,
-  private val webSocketService: WebSocketService
+  private val webSocketService: WebSocketService,
 ) {
   suspend fun getToken(): String? {
     return tokenStorage.token.first()

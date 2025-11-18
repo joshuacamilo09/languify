@@ -15,7 +15,7 @@ data class SignState(
   val email: String = "",
   val password: String = "",
   val status: SignStatus = SignStatus.IDLE,
-  val error: String? = ""
+  val error: String? = "",
 )
 
 class SignViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -35,9 +35,11 @@ class SignViewModel(private val authRepository: AuthRepository) : ViewModel() {
       _state.value = _state.value.copy(status = SignStatus.LOADING)
 
       when (val result = authRepository.sign(_state.value.email, _state.value.password)) {
-        is SignResult.Success -> _state.value = _state.value.copy(status = SignStatus.SUCCESS, error = null)
+        is SignResult.Success ->
+          _state.value = _state.value.copy(status = SignStatus.SUCCESS, error = null)
 
-        is SignResult.Error -> _state.value = _state.value.copy(status = SignStatus.ERROR, error = result.message)
+        is SignResult.Error ->
+          _state.value = _state.value.copy(status = SignStatus.ERROR, error = result.message)
       }
     }
   }
