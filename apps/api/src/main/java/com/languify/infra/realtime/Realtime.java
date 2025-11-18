@@ -221,6 +221,8 @@ public class Realtime {
     session.put("output_audio_format", "pcm16");
     session.put("input_audio_transcription", Map.of("model", "whisper-1"));
     session.put("turn_detection", null);
+    session.put("temperature", 0.6);
+    session.put("max_response_output_tokens", 4096);
 
     return Map.of("type", "session.update", "session", session);
   }
@@ -264,8 +266,8 @@ public class Realtime {
 
       String instructions =
           String.format(
-              "Translate this speech from %s to %s. Only provide the translation.",
-              fromLanguage, toLanguage);
+              "You must translate from %s to %s. Do not respond in %s under any circumstances. Output ONLY the %s translation.",
+              fromLanguage, toLanguage, fromLanguage, toLanguage);
 
       awaitingCommitAck = true;
       pendingResponseInstructions = instructions;
