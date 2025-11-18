@@ -12,13 +12,16 @@ import kotlinx.coroutines.flow.asStateFlow
 class ConversationService(private val webSocketService: WebSocketService) {
   private val gson = Gson()
   private val _conversation = MutableStateFlow<ActiveConversation?>(null)
-
   val conversation: StateFlow<ActiveConversation?> = _conversation.asStateFlow()
 
   private val _audioDelta = MutableStateFlow<String?>(null)
   val audioDelta: StateFlow<String?> = _audioDelta.asStateFlow()
 
+  private val _isStarting = MutableStateFlow(false)
+  val isStarting: StateFlow<Boolean> = _isStarting.asStateFlow()
+
   fun startConversation(fromLanguage: String = "pt", toLanguage: String = "en") {
+    _isStarting.value = true
     val dto = StartConversationDTO(fromLanguage, toLanguage)
     webSocketService.send("conversation:start", dto)
   }
@@ -51,11 +54,13 @@ class ConversationService(private val webSocketService: WebSocketService) {
 
       when (eventName) {
         "conversation:start:success" -> {
-          val current = _conversation.value
-          if (current == null) return
-
-          _conversation.value =
-            current.copy(recordingState = RecordingState.IDLE, translationState = TranslationState.READY)
+          _isStarting.value = false
+          _conversation.value = ActiveConversation(
+            fromLanguage = "pt",
+            toLanguage = "en",
+            recordingState = RecordingState.RECORDING,
+            translationState = TranslationState.READY
+          )
         }
         "conversation:translate:state" -> {
           val data = json["data"] as? Map<*, *>

@@ -22,6 +22,7 @@ import com.languify.communication.conversation.domain.TranslationState
 @Composable
 fun ConversationScreen(viewModel: ConversationViewModel) {
   val conversation by viewModel.conversation.collectAsState()
+  val isStarting by viewModel.isStarting.collectAsState()
   val context = LocalContext.current
 
   val permissionLauncher = rememberLauncherForActivityResult(
@@ -42,7 +43,10 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
 
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     if (conversation == null) {
-      StartConversationView(onStart = { viewModel.startConversation() })
+      StartConversationView(
+        isStarting = isStarting,
+        onStart = { viewModel.startConversation() }
+      )
     } else {
       ActiveConversationView(
         fromLanguage = conversation!!.fromLanguage,
@@ -58,13 +62,19 @@ fun ConversationScreen(viewModel: ConversationViewModel) {
 }
 
 @Composable
-fun StartConversationView(onStart: () -> Unit) {
+fun StartConversationView(isStarting: Boolean, onStart: () -> Unit) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(16.dp)
   ) {
     Text("Start Real-Time Translation", style = MaterialTheme.typography.headlineMedium)
-    Button(onClick = onStart) { Text("Start Conversation") }
+
+    if (isStarting) {
+      CircularProgressIndicator()
+      Text("Connecting...", style = MaterialTheme.typography.bodyMedium)
+    } else {
+      Button(onClick = onStart) { Text("Start Conversation") }
+    }
   }
 }
 

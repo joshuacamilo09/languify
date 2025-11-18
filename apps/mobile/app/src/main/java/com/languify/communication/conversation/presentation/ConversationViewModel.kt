@@ -15,17 +15,28 @@ class ConversationViewModel(
 
   val conversation = conversationService.conversation
   val audioDelta = conversationService.audioDelta
+  val isStarting = conversationService.isStarting
 
   private var recordingJob: Job? = null
 
+  init {
+    viewModelScope.launch {
+      conversation.collect { conv ->
+        if (conv?.recordingState == RecordingState.RECORDING && recordingJob == null) startRecordingInternal()
+      }
+    }
+  }
+
   fun startConversation() {
-    conversationService.initializeConversation()
     conversationService.startConversation()
   }
 
   fun startRecording() {
     conversationService.updateRecordingState(RecordingState.RECORDING)
+    startRecordingInternal()
+  }
 
+  private fun startRecordingInternal() {
     recordingJob = viewModelScope.launch {
       try {
         audioRecorder.startRecording { base64Chunk -> conversationService.sendAudioChunk(base64Chunk) }
