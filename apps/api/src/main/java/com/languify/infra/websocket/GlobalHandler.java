@@ -10,15 +10,17 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import java.util.Base64;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class GlobalHandler extends TextWebSocketHandler {
+public class GlobalHandler extends AbstractWebSocketHandler {
   private final ConversationHandler conversationHandler;
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -65,6 +67,25 @@ public class GlobalHandler extends TextWebSocketHandler {
           session.getId(),
           describeSessionOwner(session),
           payload,
+          ex);
+
+      throw ex;
+    }
+  }
+
+  @Override
+  protected void handleBinaryMessage(@NonNull WebSocketSession session, @NonNull BinaryMessage message)
+      throws Exception {
+    try {
+      byte[] audioData = message.getPayload().array();
+      String base64Audio = Base64.getEncoder().encodeToString(audioData);
+
+      conversationHandler.handleBinaryAudio(base64Audio, session);
+    } catch (Exception ex) {
+      log.error(
+          "WebSocket binary message error | sessionId={} user={}",
+          session.getId(),
+          describeSessionOwner(session),
           ex);
 
       throw ex;

@@ -304,4 +304,19 @@ public class ConversationHandler extends Handler {
 
     this.state.remove(userId);
   }
+
+    public void handleBinaryAudio(String base64Audio, WebSocketSession session) {
+        Session s = this.extractSessionFromWebSocketSession(session);
+        UUID userId = s.getUser().getId();
+
+        Optional<ConversationState> optionalState = this.state.get(userId);
+
+        if (optionalState.isEmpty()) {
+            this.emit("conversation:data:error", null, userId, session);
+            return;
+        }
+
+        ConversationState state = optionalState.get();
+        state.getRealtime().appendAudio(base64Audio);
+    }
 }
