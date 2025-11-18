@@ -28,7 +28,7 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/health","/auth/sign", "/auth/sign/google").permitAll().anyRequest().authenticated())
+                auth.requestMatchers("/health","/auth/sign", "/auth/sign/google", "/ws").permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

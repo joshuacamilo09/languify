@@ -27,7 +27,8 @@ public class Handshake implements HandshakeInterceptor {
       WebSocketHandler _handler,
       Map<String, Object> attrs)
       throws Exception {
-    String token = req.getHeaders().getFirst("Authorization");
+    String token = req.getURI().getQuery();
+
     Optional<String> normalized = normalizeToken(token);
     if (normalized.isEmpty()) return false;
 
@@ -43,17 +44,11 @@ public class Handshake implements HandshakeInterceptor {
   }
 
   private Optional<String> normalizeToken(String token) {
-    if (token == null || !token.startsWith("Bearer ")) {
-      return Optional.empty();
-    }
+    if (token == null || token.isEmpty()) return Optional.empty();
+    if (token.startsWith("session_token=")) token = token.substring("session_token=".length());
+    if (this.jwt.isInvalid(token)) return Optional.empty();
 
-    String cleaned = token.replace("Bearer ", "");
-
-    if (this.jwt.isInvalid(cleaned)) {
-      return Optional.empty();
-    }
-
-    return Optional.of(cleaned);
+    return Optional.of(token);
   }
 
   @Override
