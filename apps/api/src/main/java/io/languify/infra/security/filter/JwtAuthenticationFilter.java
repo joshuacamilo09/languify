@@ -3,7 +3,6 @@ package io.languify.infra.security.filter;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
-import io.languify.infra.logging.Logger;
 import io.languify.infra.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -73,12 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       chain.doFilter(req, res);
     } catch (Exception e) {
-      Logger.error(
-          log,
-          "Failed to authenticate request",
-          e,
-          "path",
-          req.getRequestURI());
+      log.error("Failed to authenticate request | path={}", req.getRequestURI(), e);
       chain.doFilter(req, res);
     }
   }

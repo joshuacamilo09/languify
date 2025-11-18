@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.languify.infra.logging.Logger;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -38,7 +37,7 @@ public class JwtService {
     try {
       return getClaims(token).getExpiration().before(new Date());
     } catch (Exception ex) {
-      Logger.error(log, "Failed to validate JWT token", ex);
+      log.error("Failed to validate JWT token", ex);
       return true;
     }
   }

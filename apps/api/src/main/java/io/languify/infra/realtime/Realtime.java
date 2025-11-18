@@ -3,7 +3,6 @@ package io.languify.infra.realtime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.languify.infra.logging.Logger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -42,15 +41,6 @@ public class Realtime {
   public void connect(String sourceLanguage, String targetLanguage) {
     String uriWithModel = this.REALTIME_URI + "?model=gpt-4o-realtime-preview-2024-10-01";
 
-    Logger.info(
-        log,
-        "Connecting to OpenAI Realtime API",
-        "sourceLanguage",
-        sourceLanguage,
-        "targetLanguage",
-        targetLanguage,
-        "uri",
-        uriWithModel);
 
     HttpClient client = HttpClient.newHttpClient();
 
@@ -68,13 +58,6 @@ public class Realtime {
                 new WebSocket.Listener() {
                   @Override
                   public void onOpen(WebSocket socket) {
-                    Logger.info(
-                        log,
-                        "OpenAI Realtime connection established",
-                        "sourceLanguage",
-                        sourceLanguage,
-                        "targetLanguage",
-                        targetLanguage);
 
                     WebSocket.Listener.super.onOpen(socket);
                     configureSession(socket, sourceLanguage, targetLanguage);
@@ -94,7 +77,7 @@ public class Realtime {
                         handleEvent(event);
                       }
                     } catch (Exception e) {
-                      Logger.error(log, "Error parsing OpenAI event", e);
+                      log.error("Error parsing OpenAI event", e);
                       messageBuffer.setLength(0);
                     }
 
@@ -103,25 +86,16 @@ public class Realtime {
 
                   @Override
                   public CompletionStage<?> onClose(WebSocket socket, int code, String reason) {
-                    Logger.info(
-                        log,
-                        "OpenAI Realtime connection closed",
-                        "code",
-                        code,
-                        "reason",
-                        reason != null ? reason : "No reason provided");
 
                     return WebSocket.Listener.super.onClose(socket, code, reason);
                   }
 
                   @Override
                   public void onError(WebSocket socket, Throwable error) {
-                    Logger.error(
-                        log,
-                        "OpenAI Realtime connection error",
-                        error,
-                        "errorType",
-                        error.getClass().getSimpleName());
+                    log.error(
+                        "OpenAI Realtime connection error | errorType={}",
+                        error.getClass().getSimpleName(),
+                        error);
 
                     WebSocket.Listener.super.onError(socket, error);
                   }
@@ -131,7 +105,6 @@ public class Realtime {
 
   private void handleEvent(JsonNode event) {
     if (event == null || !event.has("type")) {
-      Logger.warn(log, "Received event without type field");
       return;
     }
 
@@ -141,11 +114,6 @@ public class Realtime {
       case "conversation.item.input_audio_transcription.completed":
         if (event.has("transcript")) {
           String transcript = event.get("transcript").asText();
-          Logger.info(
-              log,
-              "Original transcription completed",
-              "transcriptLength",
-              transcript.length());
           this.handler.onOriginalTranscription(transcript);
         }
 
@@ -154,12 +122,6 @@ public class Realtime {
       case "response.audio_transcript.done":
         if (event.has("transcript")) {
           String transcript = event.get("transcript").asText();
-          Logger.info(
-              log,
-              "Translated transcription completed",
-              "transcriptLength",
-              transcript.length());
-
           this.handler.onTranslatedTranscription(transcript);
         }
 
@@ -170,15 +132,11 @@ public class Realtime {
         break;
 
       case "response.audio.done":
-        Logger.info(log, "Audio response completed");
         this.handler.onAudioDone();
-
         break;
 
       case "response.done":
-        Logger.info(log, "Translation response completed");
         this.handler.onTranslationDone();
-
         break;
 
       case "error":
@@ -192,26 +150,17 @@ public class Realtime {
             ? event.get("error").get("message").asText()
             : "No error message";
 
-        Logger.error(
-            log,
-            "OpenAI Realtime API error",
-            new RuntimeException(errorMessage),
-            "errorType",
+        log.error(
+            "OpenAI Realtime API error | errorType={} errorCode={} eventId={} message={}",
             errorType,
-            "errorCode",
             errorCode,
-            "eventId",
-            event.has("event_id") ? event.get("event_id").asText() : "unknown");
+            event.has("event_id") ? event.get("event_id").asText() : "unknown",
+            errorMessage);
         awaitingCommitAck = false;
         pendingResponseInstructions = null;
         break;
 
       case "input_audio_buffer.committed":
-        Logger.info(
-            log,
-            "OpenAI confirmed audio commit",
-            "pendingResponse",
-            pendingResponseInstructions != null);
 
         awaitingCommitAck = false;
 
@@ -223,7 +172,6 @@ public class Realtime {
         break;
 
       case "input_audio_buffer.cleared":
-        Logger.info(log, "OpenAI reported audio buffer cleared");
         break;
 
       case "session.created":
@@ -240,7 +188,6 @@ public class Realtime {
         break;
 
       default:
-        Logger.warn(log, "Unhandled OpenAI event type", "eventType", type);
         break;
     }
   }
@@ -250,13 +197,6 @@ public class Realtime {
   }
 
   private void configureSession(WebSocket socket, String sourceLanguage, String targetLanguage) {
-    Logger.info(
-        log,
-        "Configuring OpenAI Realtime session",
-        "sourceLanguage",
-        sourceLanguage,
-        "targetLanguage",
-        targetLanguage);
 
     try {
       String instructions =
@@ -267,9 +207,8 @@ public class Realtime {
       Map<String, Object> config = getSessionConfiguration(instructions);
       socket.sendText(mapper.writeValueAsString(config), true);
 
-      Logger.info(log, "OpenAI Realtime session configured successfully");
     } catch (JsonProcessingException e) {
-      Logger.error(log, "Error creating session config", e);
+      log.error("Error creating session config", e);
     }
   }
 
@@ -293,17 +232,6 @@ public class Realtime {
 
       double audioMs = (pcmBytes.length * 1000.0) / (SAMPLE_RATE * BYTES_PER_SAMPLE);
 
-      Logger.info(
-          log,
-          "Appending audio to buffer",
-          "pcmBytes",
-          pcmBytes.length,
-          "totalPcmBytes",
-          totalPcmBytes,
-          "audioMs",
-          String.format("%.2f", audioMs),
-          "totalMs",
-          String.format("%.2f", (totalPcmBytes * 1000.0) / (SAMPLE_RATE * BYTES_PER_SAMPLE)));
 
       Map<String, Object> event = Map.of("type", "input_audio_buffer.append", "audio", base64Audio);
       String eventJson = mapper.writeValueAsString(event);
@@ -311,7 +239,7 @@ public class Realtime {
       send(eventJson);
       audioChunksAppended++;
     } catch (Exception e) {
-      Logger.error(log, "Error appending audio", e);
+      log.error("Error appending audio", e);
     }
   }
 
@@ -320,50 +248,16 @@ public class Realtime {
     double totalMs = (totalPcmBytes * 1000.0) / (SAMPLE_RATE * BYTES_PER_SAMPLE);
 
     if (totalPcmBytes < MIN_AUDIO_BYTES) {
-      Logger.warn(
-          log,
-          "Insufficient audio for commit, skipping translation",
-          "fromLanguage",
-          fromLanguage,
-          "toLanguage",
-          toLanguage,
-          "totalPcmBytes",
-          totalPcmBytes,
-          "totalMs",
-          String.format("%.2f", totalMs),
-          "minRequiredMs",
-          100.0);
 
       return;
     }
 
     if (awaitingCommitAck) {
-      Logger.warn(
-          log,
-          "Commit already in progress, ignoring new request",
-          "fromLanguage",
-          fromLanguage,
-          "toLanguage",
-          toLanguage);
       return;
     }
 
-    Logger.info(
-        log,
-        "Committing audio buffer and requesting translation",
-        "fromLanguage",
-        fromLanguage,
-        "toLanguage",
-        toLanguage,
-        "chunksAppended",
-        audioChunksAppended,
-        "totalPcmBytes",
-        totalPcmBytes,
-        "totalMs",
-        String.format("%.2f", totalMs));
 
     try {
-      Logger.info(log, "Sending input_audio_buffer.commit to OpenAI");
 
       Map<String, Object> commitEvent = Map.of("type", "input_audio_buffer.commit");
       send(mapper.writeValueAsString(commitEvent));
@@ -376,19 +270,12 @@ public class Realtime {
       awaitingCommitAck = true;
       pendingResponseInstructions = instructions;
     } catch (JsonProcessingException e) {
-      Logger.error(log, "Error committing translation", e);
+      log.error("Error committing translation", e);
     }
   }
 
   public void clearBuffer() {
     try {
-      Logger.info(
-          log,
-          "Clearing audio buffer",
-          "chunksCleared",
-          audioChunksAppended,
-          "bytesCleared",
-          totalPcmBytes);
 
       Map<String, Object> clearEvent = Map.of("type", "input_audio_buffer.clear");
       send(mapper.writeValueAsString(clearEvent));
@@ -396,12 +283,11 @@ public class Realtime {
       audioChunksAppended = 0;
       totalPcmBytes = 0;
     } catch (JsonProcessingException e) {
-      Logger.error(log, "Error clearing buffer", e);
+      log.error("Error clearing buffer", e);
     }
   }
 
   public void disconnect() {
-    Logger.info(log, "Disconnecting from OpenAI Realtime API");
     this.socket.sendClose(WebSocket.NORMAL_CLOSURE, "Closing");
   }
 
@@ -412,9 +298,8 @@ public class Realtime {
 
       send(mapper.writeValueAsString(responseEvent));
 
-      Logger.info(log, "Translation request sent to OpenAI");
     } catch (JsonProcessingException e) {
-      Logger.error(log, "Error sending translation response request", e);
+      log.error("Error sending translation response request", e);
     }
   }
 }

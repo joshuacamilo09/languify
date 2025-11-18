@@ -23,32 +23,23 @@ public class GlobalExceptionHandler {
     String method = request != null ? request.getMethod() : "UNKNOWN";
     String path = request != null ? request.getRequestURI() : "unknown";
 
-    Logger.error(
-        log,
-        "Unhandled HTTP exception",
-        ex,
-        "method",
+    log.error(
+        "Unhandled HTTP exception | method={} path={} status={}",
         method,
-        "path",
         path,
-        "status",
-        status.value());
+        status.value(),
+        ex);
 
     return ResponseEntity.status(status).body(Map.of("message", "Something went wrong"));
   }
 
   private HttpStatus resolveStatus(Exception ex) {
-    if (ex instanceof ResponseStatusException responseStatusException) {
-      return HttpStatus.valueOf(responseStatusException.getStatusCode().value());
-    }
+    if (ex instanceof ResponseStatusException responseStatusException) return HttpStatus.valueOf(responseStatusException.getStatusCode().value());
 
     ResponseStatus responseStatus =
         AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class);
 
-    if (responseStatus != null) {
-      return responseStatus.value();
-    }
-
+    if (responseStatus != null) return responseStatus.value();
     return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 }

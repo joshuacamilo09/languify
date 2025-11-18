@@ -11,7 +11,6 @@ import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
 import io.languify.identity.user.repository.UserRepository;
 import io.languify.identity.user.service.UserService;
-import io.languify.infra.logging.Logger;
 import io.languify.infra.security.service.JwtService;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +64,7 @@ class AuthenticationController {
       try {
            token = verifier.verify(req.getIdToken());
       } catch (Exception e) {
-        Logger.error(log, "Failed to verify Google ID token", e);
+        log.error("Failed to verify Google ID token", e);
       }
 
       if (token == null) {

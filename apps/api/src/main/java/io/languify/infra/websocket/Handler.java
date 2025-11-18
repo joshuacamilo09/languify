@@ -3,7 +3,6 @@ package io.languify.infra.websocket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.languify.identity.auth.model.Session;
-import io.languify.infra.logging.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,16 +36,12 @@ public abstract class Handler {
       message.put("data", d);
       session.sendMessage(new TextMessage(this.mapper.writeValueAsString(message)));
     } catch (Exception e) {
-      Logger.error(
-          log,
-          "Failed to emit WebSocket message",
-          e,
-          "event",
+      log.error(
+          "Failed to emit WebSocket message | event={} userId={} sessionId={}",
           event,
-          "userId",
           userId,
-          "sessionId",
-          session.getId());
+          session.getId(),
+          e);
     }
   }
 }

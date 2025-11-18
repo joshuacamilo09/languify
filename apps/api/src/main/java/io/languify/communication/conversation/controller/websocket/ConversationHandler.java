@@ -11,7 +11,6 @@ import io.languify.communication.conversation.service.ConversationService;
 import io.languify.communication.conversation.service.ConversationTranscriptionService;
 import io.languify.identity.auth.model.Session;
 import io.languify.identity.user.model.User;
-import io.languify.infra.logging.Logger;
 import io.languify.infra.realtime.Realtime;
 import io.languify.infra.realtime.RealtimeEventHandler;
 import io.languify.infra.websocket.Handler;
@@ -43,18 +42,10 @@ public class ConversationHandler extends Handler {
 
   public void handleSegment(String segment, JsonNode data, WebSocketSession session) {
     Session s = this.extractSessionFromWebSocketSession(session);
+
     User user = s.getUser();
     UUID userId = user != null ? user.getId() : null;
 
-    Logger.info(
-        log,
-        "Handling conversation segment",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "segment",
-        segment);
 
     switch (segment) {
       case "start":
@@ -62,20 +53,14 @@ public class ConversationHandler extends Handler {
           StartConversationDTO dto = this.mapper.treeToValue(data, StartConversationDTO.class);
           this.startConversation(dto, session);
         } catch (Exception e) {
-          Logger.error(
-              log,
-              "Failed to start conversation",
-              e,
-              "userId",
+          log.error(
+              "Failed to start conversation | userId={} sessionId={} segment={} fromLanguage={} toLanguage={}",
               userId,
-              "sessionId",
               session.getId(),
-              "segment",
               segment,
-              "fromLanguage",
               data.has("fromLanguage") ? data.get("fromLanguage").asText() : null,
-              "toLanguage",
-              data.has("toLanguage") ? data.get("toLanguage").asText() : null);
+              data.has("toLanguage") ? data.get("toLanguage").asText() : null,
+              e);
 
           this.emit("conversation:start:error", null, userId, session);
         }
@@ -87,18 +72,14 @@ public class ConversationHandler extends Handler {
               this.mapper.treeToValue(data, ProcessConversationDataDTO.class);
           this.processConversationData(dto, session);
         } catch (Exception e) {
-          Logger.error(
-              log,
-              "Failed to process conversation data",
-              e,
-              "userId",
+          log.error(
+              "Failed to process conversation data | userId={} sessionId={} segment={} hasAudio={}",
               userId,
-              "sessionId",
               session.getId(),
-              "segment",
               segment,
-              "hasAudioData",
-              data.has("audio"));
+              data.has("audio"),
+              e);
+
           this.emit("conversation:data:error", null, userId, session);
         }
         break;
@@ -106,16 +87,12 @@ public class ConversationHandler extends Handler {
         try {
           this.translateConversation(session);
         } catch (Exception e) {
-          Logger.error(
-              log,
-              "Failed to translate conversation",
-              e,
-              "userId",
+          log.error(
+              "Failed to translate conversation | userId={} sessionId={} segment={}",
               userId,
-              "sessionId",
               session.getId(),
-              "segment",
-              segment);
+              segment,
+              e);
 
           this.emit("conversation:translate:error", null, userId, session);
         }
@@ -125,16 +102,13 @@ public class ConversationHandler extends Handler {
         try {
           this.swapLanguages(session);
         } catch (Exception e) {
-          Logger.error(
-              log,
-              "Failed to swap conversation languages",
-              e,
-              "userId",
+          log.error(
+              "Failed to swap conversation languages | userId={} sessionId={} segment={}",
               userId,
-              "sessionId",
               session.getId(),
-              "segment",
-              segment);
+              segment,
+              e);
+
           this.emit("conversation:swap:error", null, userId, session);
         }
         
@@ -143,29 +117,18 @@ public class ConversationHandler extends Handler {
         try {
           this.closeConversation(session);
         } catch (Exception e) {
-          Logger.error(
-              log,
-              "Failed to close conversation",
-              e,
-              "userId",
+          log.error(
+              "Failed to close conversation | userId={} sessionId={} segment={}",
               userId,
-              "sessionId",
               session.getId(),
-              "segment",
-              segment);
+              segment,
+              e);
+
           this.emit("conversation:close:error", null, userId, session);
         }
         break;
       default:
-        Logger.warn(
-            log,
-            "Unknown conversation segment received",
-            "userId",
-            userId,
-            "sessionId",
-            session.getId(),
-            "segment",
-            segment);
+
         break;
     }
   }
@@ -174,26 +137,8 @@ public class ConversationHandler extends Handler {
     Session s = this.extractSessionFromWebSocketSession(session);
     UUID userId = s.getUser().getId();
 
-    Logger.info(
-        log,
-        "Starting conversation",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "fromLanguage",
-        data.getFromLanguage(),
-        "toLanguage",
-        data.getToLanguage());
 
     if (this.state.hasActiveConversation(userId)) {
-      Logger.warn(
-          log,
-          "User already has active conversation",
-          "userId",
-          userId,
-          "sessionId",
-          session.getId());
       
       this.emit("conversation:start:error", null, userId, session);
       return;
@@ -219,15 +164,6 @@ public class ConversationHandler extends Handler {
                 transcription.setOriginalTranscript(transcript);
                 transcriptionRepository.save(transcription);
 
-                Logger.info(
-                    log,
-                    "Original transcription saved",
-                    "userId",
-                    userId,
-                    "conversationId",
-                    conversation.getId(),
-                    "transcriptLength",
-                    transcript.length());
               }
 
               @Override
@@ -239,27 +175,11 @@ public class ConversationHandler extends Handler {
                 transcription.setTranslatedTranscript(transcript);
                 transcriptionRepository.save(transcription);
 
-                Logger.info(
-                    log,
-                    "Translated transcription saved",
-                    "userId",
-                    userId,
-                    "conversationId",
-                    conversation.getId(),
-                    "transcriptLength",
-                    transcript.length());
               }
 
               @Override
               public void onAudioDelta(String audioDelta) {
                 if (firstDelta) {
-                  Logger.info(
-                      log,
-                      "Audio streaming started",
-                      "userId",
-                      userId,
-                      "conversationId",
-                      conversation.getId());
 
                   emit(
                       "conversation:translate:state",
@@ -279,26 +199,12 @@ public class ConversationHandler extends Handler {
 
               @Override
               public void onAudioDone() {
-                Logger.info(
-                    log,
-                    "Audio streaming completed",
-                    "userId",
-                    userId,
-                    "conversationId",
-                    conversation.getId());
 
                 emit("conversation:data:done", null, userId, session);
               }
 
               @Override
               public void onTranslationDone() {
-                Logger.info(
-                    log,
-                    "Translation completed",
-                    "userId",
-                    userId,
-                    "conversationId",
-                    conversation.getId());
 
                 emit(
                     "conversation:translate:state",
@@ -323,15 +229,6 @@ public class ConversationHandler extends Handler {
     this.state.store(
         userId, conversation, realtime, session, data.getFromLanguage(), data.getToLanguage());
 
-    Logger.info(
-        log,
-        "Conversation started successfully",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "conversationId",
-        conversation.getId());
 
     this.emit("conversation:start:success", null, userId, session);
   }
@@ -343,13 +240,6 @@ public class ConversationHandler extends Handler {
     Optional<ConversationState> optionalState = this.state.get(userId);
 
     if (optionalState.isEmpty()) {
-      Logger.warn(
-          log,
-          "No active conversation found for data processing",
-          "userId",
-          userId,
-          "sessionId",
-          session.getId());
 
       this.emit("conversation:data:error", null, userId, session);
       return;
@@ -357,15 +247,6 @@ public class ConversationHandler extends Handler {
 
     ConversationState state = optionalState.get();
 
-    Logger.info(
-        log,
-        "Processing audio data from client",
-        "userId",
-        userId,
-        "conversationId",
-        state.getConversation().getId(),
-        "audioDataLength",
-        data.getAudio() != null ? data.getAudio().length() : 0);
 
     state.getRealtime().appendAudio(data.getAudio());
   }
@@ -377,13 +258,6 @@ public class ConversationHandler extends Handler {
     Optional<ConversationState> optionalState = this.state.get(userId);
 
     if (optionalState.isEmpty()) {
-      Logger.warn(
-          log,
-          "No active conversation found for translation",
-          "userId",
-          userId,
-          "sessionId",
-          session.getId());
 
       this.emit("conversation:translate:error", null, userId, session);
       return;
@@ -391,19 +265,6 @@ public class ConversationHandler extends Handler {
 
     ConversationState state = optionalState.get();
 
-    Logger.info(
-        log,
-        "Translating conversation",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "conversationId",
-        state.getConversation().getId(),
-        "fromLanguage",
-        state.getFromLanguage(),
-        "toLanguage",
-        state.getToLanguage());
 
     this.emit(
         "conversation:translate:state", java.util.Map.of("state", "loading"), userId, session);
@@ -418,13 +279,6 @@ public class ConversationHandler extends Handler {
     Optional<ConversationState> optionalState = this.state.get(userId);
 
     if (optionalState.isEmpty()) {
-      Logger.warn(
-          log,
-          "No active conversation found for language swap",
-          "userId",
-          userId,
-          "sessionId",
-          session.getId());
 
       this.emit("conversation:swap:error", null, userId, session);
       return;
@@ -432,36 +286,9 @@ public class ConversationHandler extends Handler {
 
     ConversationState state = optionalState.get();
 
-    Logger.info(
-        log,
-        "Swapping conversation languages",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "conversationId",
-        state.getConversation().getId(),
-        "fromLanguage",
-        state.getFromLanguage(),
-        "toLanguage",
-        state.getToLanguage());
 
     state.swapLanguages();
 
-    Logger.info(
-        log,
-        "Languages swapped successfully",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "conversationId",
-        state.getConversation().getId(),
-        "newFromLanguage",
-        state.getFromLanguage(),
-        "newToLanguage",
-        state.getToLanguage()
-    );
 
     this.emit("conversation:swap:success", null, userId, session);
   }
@@ -473,14 +300,6 @@ public class ConversationHandler extends Handler {
     Optional<ConversationState> optionalState = this.state.get(userId);
 
     if (optionalState.isEmpty()) {
-      Logger.warn(
-          log,
-          "No active conversation found to close",
-          "userId",
-          userId,
-          "sessionId",
-          session.getId()
-      );
 
       this.emit("conversation:close:error", null, userId, session);
       return;
@@ -488,28 +307,10 @@ public class ConversationHandler extends Handler {
 
     ConversationState state = optionalState.get();
 
-    Logger.info(
-        log,
-        "Closing conversation",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId(),
-        "conversationId",
-        state.getConversation().getId()
-    );
 
     state.getRealtime().disconnect();
     this.state.remove(userId);
 
-    Logger.info(
-        log,
-        "Conversation closed successfully",
-        "userId",
-        userId,
-        "sessionId",
-        session.getId()
-    );
 
     this.emit("conversation:close:success", null, userId, session);
   }
