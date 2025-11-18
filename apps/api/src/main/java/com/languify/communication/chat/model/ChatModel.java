@@ -1,0 +1,37 @@
+package com.languify.communication.chat.model;
+
+import com.languify.identity.user.model.User;
+import jakarta.persistence.*;
+
+import java.time.Instant;
+import java.util.UUID;
+import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+@Entity
+@Table(name = "chats")
+@Data
+public class ChatModel {
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(columnDefinition = "UUID")
+  private UUID id;
+
+  @Column private String title;
+
+  @Column private String summary;
+
+  @Column(nullable = false)
+  private Instant createdAt;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "userId", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private User user;
+
+  @PrePersist
+  private void prePersist() {
+    this.createdAt = Instant.now();
+  }
+}
