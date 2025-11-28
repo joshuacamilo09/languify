@@ -9,3 +9,6 @@
 - .
 ## Como correr o backend ?
 - .
+
+## Como abrir a app ? 
+- .
