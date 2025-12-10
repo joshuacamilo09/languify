@@ -26,7 +26,10 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/auth/sign", "/auth/sign/google").permitAll().anyRequest().authenticated())
+                auth.requestMatchers("/auth/register",
+                        "/auth/sign/google",
+                        "/auth/login"
+                        ).permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

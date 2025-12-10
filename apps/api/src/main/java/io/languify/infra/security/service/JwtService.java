@@ -39,14 +39,16 @@ public class JwtService {
     }
   }
 
-  private SecretKey getSecretKey() {
-    if (this.SECRET_KEY != null) return this.SECRET_KEY;
+    private SecretKey getSecretKey() {
+        if (this.SECRET_KEY == null) {
+            byte[] bytes = Decoders.BASE64.decode(this.JWT_SECRET);
+            this.SECRET_KEY = Keys.hmacShaKeyFor(bytes);
+        }
+        return this.SECRET_KEY;
+    }
 
-    byte[] bytes = Decoders.BASE64.decode(this.JWT_SECRET);
-    return Keys.hmacShaKeyFor(bytes);
-  }
 
-  private Claims getClaims(String token) {
+    private Claims getClaims(String token) {
     return Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
   }
 }

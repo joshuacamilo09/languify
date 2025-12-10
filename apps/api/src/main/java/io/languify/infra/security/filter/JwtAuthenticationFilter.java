@@ -48,12 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       String userId = jwt.getSubject(token);
 
-      if (userId == null || SecurityContextHolder.getContext().getAuthentication() != null) {
-        chain.doFilter(req, res);
-        return;
-      }
+        if (userId == null) {
+            chain.doFilter(req, res);
+            return;
+        }
 
-      Optional<User> optionalUser = userRepository.findUserById(UUID.fromString(userId));
+
+        Optional<User> optionalUser = userRepository.findUserById(UUID.fromString(userId));
 
       if (optionalUser.isEmpty()) {
         chain.doFilter(req, res);
