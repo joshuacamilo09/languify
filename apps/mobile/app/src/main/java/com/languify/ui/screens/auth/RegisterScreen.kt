@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.languify.viewmodel.ProfileViewModel
 
@@ -46,6 +47,48 @@ fun RegisterScreen(
         errorMessage?.let { Text(it, color = Color.Red) }
 
         TextButton(onClick = onBackToLogin) {
+            Text("Back to Login")
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Register Screen")
+@Composable
+fun RegisterScreenPreview() {
+    Column(Modifier.padding(24.dp)) {
+        TextField(
+            value = "John Doe",
+            onValueChange = {},
+            label = { Text("Name") }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = "user@example.com",
+            onValueChange = {},
+            label = { Text("Email") }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = "password",
+            onValueChange = {},
+            label = { Text("Password") }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = "password",
+            onValueChange = {},
+            label = { Text("Confirm Password") }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = {}) {
+            Text("Register")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextButton(onClick = {}) {
             Text("Back to Login")
         }
     }

@@ -3,19 +3,23 @@ package com.languify.viewmodel
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import com.languify.viewmodel.Translation
 
+// MODELO DE DADOS
+data class Translation(
+    val original: String,
+    val translated: String,
+    val timestamp: Long = System.currentTimeMillis()
+)
 
-/**
- * Guarda e gere o histórico de traduções.
- */
 class HistoryViewModel : ViewModel() {
 
     private val _historyList = MutableStateFlow<List<Translation>>(emptyList())
     val historyList = _historyList.asStateFlow()
 
+    // Função para adicionar nova tradução
     fun addTranslation(item: Translation) {
-        _historyList.value = _historyList.value + item
+        // Adiciona ao topo da lista
+        _historyList.value = listOf(item) + _historyList.value
     }
 
     fun clearHistory() {

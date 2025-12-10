@@ -1,54 +1,62 @@
 package com.languify.ui.screens.auth
 
-// Importações
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.languify.R
 import com.languify.ui.viewmodel.AuthViewModel
 import com.languify.domain.usecase.Result
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    navController: NavController,          // Navegação entre ecrãs
-    authViewModel: AuthViewModel           // Lógica de registo (signup)
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
-    // Campos do formulário
+    val context = LocalContext.current // Necessário para mostrar Toast
+    val scope = rememberCoroutineScope()
+
+    // Observa estado do registo
+    val registerState by authViewModel.registerState.collectAsState()
+
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-
-    // Estados de visibilidade da password
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
-
-    // Mensagem de erro
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Observa estado do registo
-    val scope = rememberCoroutineScope()
-    val registerState by authViewModel.registerState.collectAsState()
+    // LÓGICA DE NAVEGAÇÃO E ERRO
+    LaunchedEffect(registerState) {
+        when (val state = registerState) {
+            is Result.Success -> {
+                Toast.makeText(context, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show()
+                authViewModel.resetState() // Limpa o estado antes de navegar
+                navController.navigate("login") {
+                    popUpTo("signup") { inclusive = true }
+                }
+            }
+            is Result.Error -> {
+                // Mostra o erro que vem do Backend (ex: "Email já existe")
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+            }
+            else -> {}
+        }
+    }
 
-    // Estrutura principal
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -61,14 +69,12 @@ fun SignUpScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Logo da app
             Image(
                 painter = painterResource(id = R.drawable.languify_logo),
                 contentDescription = "Languify logo",
                 modifier = Modifier.size(90.dp)
             )
 
-            // Título
             Text(
                 text = "Create Your Languify Account",
                 style = MaterialTheme.typography.headlineMedium,
@@ -76,101 +82,45 @@ fun SignUpScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            // Nome completo
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Full Name") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            // ... (Os teus TextFields continuam iguais aqui) ...
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Full Name") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = confirmPassword, onValueChange = { confirmPassword = it }, label = { Text("Confirm Password") }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
 
-            // Email
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email Address") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Password com botão de visibilidade
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                singleLine = true,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val icon = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(icon, contentDescription = null)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Confirmar Password
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
-                singleLine = true,
-                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val icon = if (confirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
-                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
-                        Icon(icon, contentDescription = null)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Mostra erro se as passwords não coincidirem
+            // Mensagem de erro local (passwords não coincidem)
             errorMessage?.let {
                 Text(text = it, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
             }
 
-            // Botão de Sign Up
+            // BOTÃO CORRIGIDO
             Button(
                 onClick = {
+                    if (name.isBlank() || email.isBlank() || password.isBlank()) {
+                        errorMessage = "Please fill all fields"
+                        return@Button
+                    }
                     if (password != confirmPassword) {
                         errorMessage = "Passwords do not match"
                         return@Button
                     }
 
                     errorMessage = null
-                    scope.launch {
-                        authViewModel.register(name, email, password, "en")
-                    }
+                    // Chama o registo
+                    authViewModel.register(name, email, password, "en")
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF))
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF)),
+                // Desativa o botão se estiver a carregar para não clicar 2 vezes
+                enabled = registerState !is Result.Loading
             ) {
-                when (registerState) {
-                    is Result.Loading -> CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                    is Result.Success -> Text("Sign Up", fontWeight = FontWeight.Bold)
-                    is Result.Error -> Text("Try Again", fontWeight = FontWeight.Bold)
+                if (registerState is Result.Loading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Sign Up", fontWeight = FontWeight.Bold)
                 }
             }
 
-            // Evita navegação duplicada
-            val hasNavigated = remember { mutableStateOf(false) }
-
-            // Redireciona automaticamente após registo
-            LaunchedEffect(registerState) {
-                if (registerState is Result.Success && !hasNavigated.value) {
-                    hasNavigated.value = true
-                    navController.navigate("login") {
-                        popUpTo("signup") { inclusive = true }
-                    }
-                }
-            }
-
-            // Link para voltar ao login
             TextButton(onClick = { navController.navigate("login") }) {
                 Text("Already have an account? Log in", color = MaterialTheme.colorScheme.primary)
             }

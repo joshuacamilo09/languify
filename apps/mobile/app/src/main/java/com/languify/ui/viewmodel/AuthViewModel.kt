@@ -14,29 +14,36 @@ class AuthViewModel(
     private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
-    // Estado de login
-    private val _loginState = MutableStateFlow<Result<String>>(Result.Loading)
+    // CORREÇÃO: Iniciar com Idle (Parado), não Loading
+    private val _loginState = MutableStateFlow<Result<String>>(Result.Idle)
     val loginState: StateFlow<Result<String>> = _loginState
 
-    // Estado de registo
-    private val _registerState = MutableStateFlow<Result<String>>(Result.Loading)
+    private val _registerState = MutableStateFlow<Result<String>>(Result.Idle)
     val registerState: StateFlow<Result<String>> = _registerState
 
-    // 🔹 LOGIN
     fun login(email: String, password: String) {
         viewModelScope.launch {
+            // Reset state to loading before call
+            _loginState.value = Result.Loading
             loginUseCase.execute(email, password).collect {
                 _loginState.value = it
             }
         }
     }
 
-    // 🔹 REGISTER
     fun register(name: String, email: String, password: String, nativeIdiom: String) {
         viewModelScope.launch {
+            // Reset state to loading before call
+            _registerState.value = Result.Loading
             registerUseCase.execute(name, email, password, nativeIdiom).collect {
                 _registerState.value = it
             }
         }
+    }
+
+    // Função utilitária para limpar o estado se sairmos do ecrã
+    fun resetState() {
+        _registerState.value = Result.Idle
+        _loginState.value = Result.Idle
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.languify.viewmodel.HistoryViewModel
@@ -36,10 +37,47 @@ fun HistoryScreen(historyViewModel: HistoryViewModel = viewModel()) {
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Spacer(Modifier.height(6.dp))
-                            Text("🗣️ ${item.original}", style = MaterialTheme.typography.bodyLarge)
+                            Text(item.original, style = MaterialTheme.typography.bodyLarge)
                             Spacer(Modifier.height(4.dp))
-                            Text("🌍 ${item.translated}", style = MaterialTheme.typography.bodyMedium)
+                            Text(item.translated, style = MaterialTheme.typography.bodyMedium)
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "History Screen")
+@Composable
+fun HistoryScreenPreview() {
+    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("History") }) }) { padding ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(listOf(1, 2 , 3)) { index ->
+                Card {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(
+                            text = "10:30:45 15/12/2024",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+
+                        Spacer(Modifier.height(6.dp))
+
+                        Text(
+                            "Hello, how are you?",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                        Spacer(Modifier.height(1.dp))
+
+                        Text(
+                            "Olá, como estás?",
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             }

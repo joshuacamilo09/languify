@@ -9,11 +9,11 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class RegisterUseCase(private val repository: AuthRepository) {
-    fun execute(name: String, email: String, password: String, nativeIdiom: String): Flow<Result<String>> =
+    fun execute(firstname: String, email: String, password: String, nativeIdiom: String): Flow<Result<String>> =
         flow {
             emit(Result.Loading)
             try {
-                val request = UserRegisterRequest(name, email, password, nativeIdiom)
+                val request = UserRegisterRequest(firstname, email, password, nativeIdiom)
                 val response = repository.register(request)
                 if (response.isSuccessful) {
                     val token = response.body()?.token

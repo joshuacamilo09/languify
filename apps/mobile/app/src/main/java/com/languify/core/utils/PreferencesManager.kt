@@ -19,7 +19,7 @@ class PreferencesManager(private val context: Context) {
         private val LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
     }
 
-    // 🔹 Escrever valores
+    // escrever valores
     suspend fun setToken(token: String) {
         context.dataStore.edit { it[TOKEN_KEY] = token }
     }
@@ -40,7 +40,7 @@ class PreferencesManager(private val context: Context) {
         context.dataStore.edit { it[LOGGED_IN_KEY] = isLoggedIn }
     }
 
-    // 🔹 Ler fluxos
+    //ler fluxos
     val isDarkMode: Flow<Boolean> = context.dataStore.data.map { it[DARK_MODE_KEY] ?: false }
     val language: Flow<String> = context.dataStore.data.map { it[LANGUAGE_KEY] ?: "en" }
     val isLoggedIn: Flow<Boolean> = context.dataStore.data.map { it[LOGGED_IN_KEY] ?: false }

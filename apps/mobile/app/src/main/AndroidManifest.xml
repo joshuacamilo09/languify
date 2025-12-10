@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.languify">
 
-    <!-- Permissões de localização -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -18,12 +19,10 @@
         android:theme="@style/Theme.LanguifyFrontend"
         android:usesCleartextTraffic="true">
 
-        <!-- Chave da API do Google Maps -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/MAPS_API_KEY" />
 
-        <!-- Activity principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

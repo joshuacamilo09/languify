@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
@@ -189,6 +190,51 @@ fun MapScreen() {
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(top = 10.dp, end =16.dp)
+            ) {
+                Icon(Icons.Filled.MyLocation, contentDescription = "Center on me")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "Map Screen")
+@Composable
+fun MapScreenPreview() {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text("Map") })
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // Preview simplificado sem Google Maps
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Map View",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Google Maps will be displayed here",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            FloatingActionButton(
+                onClick = {},
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 10.dp, end = 16.dp)
             ) {
                 Icon(Icons.Filled.MyLocation, contentDescription = "Center on me")
             }

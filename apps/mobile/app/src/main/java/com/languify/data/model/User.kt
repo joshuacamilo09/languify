@@ -12,8 +12,9 @@ data class UserLoginRequest(
 data class UserLoginResponse(
     @SerializedName("token") val token: String,
     @SerializedName("id") val id: Long? = null,
-    @SerializedName("name") val name: String? = null,
-    @SerializedName("email") val email: String? = null,
+    @SerializedName("firstName") val name: String?,
+    @SerializedName("lastName") val lastName: String?,
+    @SerializedName("email") val email: String?,
     @SerializedName("native_idiom") val native_idiom: String? = null
 )
 
@@ -26,7 +27,10 @@ data class UserRegisterRequest(
 
 data class UserRegisterResponse(
     @SerializedName("token") val token: String,
-    @SerializedName("id") val id: Long? = null
+    @SerializedName("id") val id: Long? = null,
+    @SerializedName("firstName") val firstName: String?,
+    @SerializedName("lastName") val lastName: String?,
+    @SerializedName("email") val email: String?
 )
 
 data class UserLoginGoole(

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.languify.domain.usecase.Result
 import com.languify.ui.viewmodel.AuthViewModel
@@ -25,25 +26,25 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    navController: NavController,              // Controla a navegação entre ecrãs
-    profileViewModel: ProfileViewModel,        // ViewModel do perfil (para guardar token e dados do user)
-    authViewModel: AuthViewModel               // ViewModel da autenticação (para login)
+    navController: NavController,              // controla a navegação entre ecrãs
+    profileViewModel: ProfileViewModel,        // viewmodel do perfil (para guardar token e dados do user)
+    authViewModel: AuthViewModel               // viewModel da autenticação (para login)
 ) {
-    // Estados locais para capturar input do utilizador
+    // estados locais para capturar input do utilizador
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // CoroutineScope para executar tarefas assíncronas (login)
+    // coroutinescope para executar tarefas assíncronas (login)
     val scope = rememberCoroutineScope()
 
-    // Estados de visibilidade da password
+    // estados de visibilidade da password
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Observa o estado do login (Loading, Success ou Error)
+    // observa o estado do login (loading, success ou error)
     val loginState by authViewModel.loginState.collectAsState()
 
-    // Layout principal
+    // layout principal
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -51,13 +52,13 @@ fun LoginScreen(
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Coluna com todos os elementos
+        // coluna com todos os elementos
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Título principal
+            // título principal
             Text(
                 text = "Welcome Back!",
                 style = MaterialTheme.typography.headlineMedium,
@@ -65,7 +66,7 @@ fun LoginScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            // Campo de e-mail
+            // campo de e-mail
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -75,7 +76,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Campo de password
+            // campo de password
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -92,12 +93,12 @@ fun LoginScreen(
                 }
             )
 
-            // Mensagem de erro (se existir)
+            // mensagem de erro (se existir)
             errorMessage?.let {
                 Text(text = it, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
             }
 
-            // Botão de Login
+            // botão de Login
             Button(
                 onClick = {
                     // Validação simples
@@ -106,7 +107,7 @@ fun LoginScreen(
                         return@Button
                     }
 
-                    // Chama a função de login no ViewModel
+                    // chama a função de login no ViewModel
                     errorMessage = null
                     scope.launch {
                         authViewModel.login(email, password)
@@ -165,6 +166,70 @@ fun LoginScreen(
             // Link para criar conta
             TextButton(onClick = { navController.navigate("signup") }) {
                 Text("Don’t have an account? Sign Up", color = MaterialTheme.colorScheme.primary)
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Login Screen")
+@Composable
+fun LoginScreenPreview() {
+    // Preview sem dependências reais - apenas visualização
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Welcome Back!",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+
+            OutlinedTextField(
+                value = "user@example.com",
+                onValueChange = {},
+                label = { Text("Email Address") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = "password",
+                onValueChange = {},
+                label = { Text("Password") },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.VisibilityOff, contentDescription = null)
+                    }
+                }
+            )
+
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C63FF))
+            ) {
+                Text("Login", fontWeight = FontWeight.Bold)
+            }
+
+            TextButton(onClick = {}) {
+                Text("Don't have an account? Sign Up", color = MaterialTheme.colorScheme.primary)
             }
         }
     }

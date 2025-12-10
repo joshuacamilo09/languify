@@ -8,7 +8,7 @@ import retrofit2.http.*
 
 object AuthController {
 
-    private const val BASE_URL = "http://10.0.2.2:8080/languify/v1/"
+    private const val BASE_URL = "http://172.20.10.3:8080/"
 
     val api: ApiService by lazy {
         Retrofit.Builder()
@@ -20,7 +20,7 @@ object AuthController {
 
     interface ApiService {
 
-        // 🔹 AUTH
+        // AUTH
         @POST("auth/login")
         suspend fun login(@Body request: UserLoginRequest): Response<UserLoginResponse>
 
@@ -30,7 +30,7 @@ object AuthController {
         @POST("auth/google")
         suspend fun loginGoogle(@Body request: UserLoginGoole): Response<UserLoginResponse>
 
-        // 🔹 USER
+        // USER
         @GET("user/profile/{id}")
         suspend fun getProfile(@Path("id") id: Long): Response<UserProfileResponse>
 
@@ -46,7 +46,7 @@ object AuthController {
             @Body request: deleteUserRequest
         ): Response<deleteUserResponse>
 
-        // 🔹 CHAT
+        // CHAT
         @POST("chat/createChat")
         suspend fun createChat(@Body request: createChatRequst): Response<createChatResponse>
 
