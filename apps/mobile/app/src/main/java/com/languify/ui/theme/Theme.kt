@@ -1,45 +1,64 @@
 package com.languify.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
-// Cores modo CLARO
-private val LightColors = lightColorScheme(
-    primary = Color(0xFF6750A4),
-    onPrimary = Color.White,
-    secondary = Color(0xFF625B71),
-    background = Color(0xFFFDFBFF),
-    surface = Color(0xFFFFFBFE),
-    onSurface = Color(0xFF1C1B1F)
-)
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = ClaudeAccent,
+        secondary = ClaudeAccentLight,
+        tertiary = ClaudeDarkBeige,
+        background = ClaudeDarkBackground,
+        surface = ClaudeDarkSurface,
+        onPrimary = ClaudeBackground,
+        onSecondary = ClaudeBackground,
+        onBackground = ClaudeBackground,
+        onSurface = ClaudeBackground,
+        outline = ClaudeDarkBorder,
+    )
 
-// Cores modo ESCURO
-private val DarkColors = darkColorScheme(
-    primary = Color(0xFFD0BCFF),
-    onPrimary = Color.Black,
-    secondary = Color(0xFFCCC2DC),
-    background = Color(0xFF1C1B1F),
-    surface = Color(0xFF2C2C2E),
-    onSurface = Color(0xFFE6E1E5)
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = ClaudeAccent,
+        secondary = ClaudeAccentLight,
+        tertiary = ClaudeTan,
+        background = ClaudeBackground,
+        surface = ClaudeSurface,
+        onPrimary = ClaudeBackground,
+        onSecondary = ClaudeTextPrimary,
+        onBackground = ClaudeTextPrimary,
+        onSurface = ClaudeTextPrimary,
+        outline = ClaudeBorder,
+    )
 
-/**
- * Tema principal da app Languify.
- */
 @Composable
 fun LanguifyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    // Disabled dynamic color for consistent minimal design
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit,
 ) {
-    val colors = if (darkTheme) DarkColors else LightColors
+    val colorScheme =
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
+
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
+        }
 
     MaterialTheme(
-        colorScheme = colors,
-        typography = AppTypography, // ✅ Agora usa a tua tipografia personalizada
-        content = content
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content,
     )
 }

@@ -1,0 +1,16 @@
+# EditorConfig for Kotlin - matches Google style
+root = true
+
+[*.{kt,kts}]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 100
+trim_trailing_whitespace = true
+
+# Ktlint-specific rules
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_filename = disabled
+ktlint_function_naming_ignore_when_annotated_with = Composable
