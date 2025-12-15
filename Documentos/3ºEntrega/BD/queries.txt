@@ -1,0 +1,31 @@
+-- Usuários
+INSERT INTO users (email, username, password)
+VALUES
+  ('alice@languify.com', 'alice', 'pwd1'),
+  ('bob@languify.com', 'bob', 'pwd2');
+
+-- Conversas
+INSERT INTO conversations (title, state, created_at, author_id, source_language, target_language)
+SELECT
+  'English to Spanish',
+  'ACTIVE',
+  NOW(),
+  u.id,
+  'en',
+  'es'
+FROM users u WHERE u.username = 'alice';
+
+-- Mensagens
+INSERT INTO conversation_messages (
+  conversation_id, transcription, translation,
+  source_language, target_language, speaker, created_at
+)
+SELECT
+  c.id,
+  'How are you?',
+  '¿Cómo estás?',
+  'en',
+  'es',
+  'USER',
+  NOW()
+FROM conversations c;

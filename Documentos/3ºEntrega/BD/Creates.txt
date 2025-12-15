@@ -1,0 +1,47 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) NOT NULL UNIQUE,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255)
+);
+
+CREATE TYPE conversation_state AS ENUM (
+  'INITIALIZING',
+  'INITIALIZATION_FAILED',
+  'ACTIVE',
+  'COMPLETED',
+  'FAILED'
+);
+
+CREATE TYPE message_speaker AS ENUM (
+  'USER',
+  'AI'
+);
+
+CREATE TABLE conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title VARCHAR(255) NOT NULL,
+  state conversation_state NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  author_id UUID NOT NULL,
+  source_language VARCHAR(10),
+  target_language VARCHAR(10),
+  CONSTRAINT fk_conversation_author FOREIGN KEY (author_id)
+    REFERENCES users(id)
+);
+
+CREATE TABLE conversation_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID NOT NULL,
+  transcription TEXT NOT NULL,
+  translation TEXT NOT NULL,
+  source_language VARCHAR(10) NOT NULL,
+  target_language VARCHAR(10) NOT NULL,
+  speaker message_speaker NOT NULL,
+  openai_response_id VARCHAR(255),
+  created_at TIMESTAMPTZ NOT NULL,
+  CONSTRAINT fk_message_conversation FOREIGN KEY (conversation_id)
+    REFERENCES conversations(id) ON DELETE CASCADE
+);
