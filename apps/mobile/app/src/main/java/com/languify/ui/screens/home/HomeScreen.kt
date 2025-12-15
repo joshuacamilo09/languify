@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.languify.ui.viewmodel.ChatViewModel
 import com.languify.viewmodel.HomeViewModel
 import com.languify.viewmodel.HistoryViewModel
 import com.languify.viewmodel.ProfileViewModel
@@ -33,7 +34,8 @@ import com.languify.viewmodel.Translation
 fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel(),
     historyViewModel: HistoryViewModel = viewModel(),
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    chatViewModel: ChatViewModel
 ) {
     val context = LocalContext.current
     val state by homeViewModel.state.collectAsState()

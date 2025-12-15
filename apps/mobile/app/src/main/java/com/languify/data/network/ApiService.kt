@@ -68,4 +68,5 @@ object AuthController {
             @Query("userId") userId: Long
         ): Response<DeleteChatResponse>
     }
+
 }

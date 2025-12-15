@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.languify">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -18,10 +21,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LanguifyFrontend"
         android:usesCleartextTraffic="true">
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/MAPS_API_KEY" />
 
         <activity
             android:name=".MainActivity"

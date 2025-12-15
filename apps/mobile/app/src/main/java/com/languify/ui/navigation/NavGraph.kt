@@ -9,15 +9,18 @@ import com.languify.ui.screens.auth.SignUpScreen
 import com.languify.ui.screens.home.HomeScreen
 import com.languify.ui.screens.map.MapScreen
 import com.languify.ui.screens.history.HistoryScreen
-import com.languify.ui.screens.profile.ProfileScreen
+import com.languify.ui.screens.profile.ProfileScreenRoute
+import com.languify.ui.screens.test.TestRealtimeScreen
 import com.languify.viewmodel.ProfileViewModel
 import com.languify.ui.viewmodel.AuthViewModel
+import com.languify.ui.viewmodel.ChatViewModel
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     profileViewModel: ProfileViewModel,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    chatViewModel: ChatViewModel
 ) {
     NavHost(
         navController = navController,
@@ -39,7 +42,11 @@ fun NavGraph(
         }
 
         composable("home") {
-            HomeScreen(profileViewModel = profileViewModel)
+            // Passa o viewModel para o HomeScreen
+            HomeScreen(
+                profileViewModel = profileViewModel,
+                chatViewModel = chatViewModel
+            )
         }
 
         composable("map") {
@@ -50,11 +57,17 @@ fun NavGraph(
             HistoryScreen()
         }
 
+        // No teu NavGraph.kt
         composable("profile") {
-            ProfileScreen(
+            // ProfileScreen( ... )  <- ANTIGO
+            ProfileScreenRoute( // <- NOVO
                 navController = navController,
                 profileViewModel = profileViewModel
             )
+        }
+
+        composable("test_realtime") {
+            TestRealtimeScreen(viewModel = chatViewModel)
         }
     }
 }

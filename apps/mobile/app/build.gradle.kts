@@ -55,19 +55,6 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-
-    implementation("com.google.maps.android:maps-compose:4.2.0")
-
-    // Google Maps Compose
-    implementation("com.google.maps.android:maps-compose:4.3.3")
-
-    // Play Services (necessário para o mapa)
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
-
-    // Para permissões e localização
-    implementation("com.google.android.gms:play-services-location:21.0.1")
-
-
     // Outras dependências que já tens
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
     implementation("androidx.activity:activity-compose:1.9.2")
@@ -78,12 +65,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.3")
     implementation("androidx.compose.animation:animation:1.7.3")
 
-
-    // Biblioteca correta para animações de navegação
-    implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
-
-
-    implementation("com.google.accompanist:accompanist-navigation-animation:0.32.0")
 
     // Navigation animation for Jetpack Compose
     implementation("androidx.navigation:navigation-compose:2.8.0")
@@ -105,6 +86,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.play.services.maps)
     debugImplementation("androidx.compose.ui:ui-tooling")
 
 // Navigation
@@ -124,9 +106,8 @@ dependencies {
 // OkHttp logging (optional)
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
-// Google Maps Compose
-    implementation("com.google.maps.android:maps-compose:4.3.0")
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
+//OpenStreetMap
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

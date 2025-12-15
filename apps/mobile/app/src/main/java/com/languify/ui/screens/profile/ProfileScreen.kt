@@ -19,13 +19,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.languify.viewmodel.ProfileViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+// Certifica-te que tens este import para o R (ajusta o pacote se necessário)
+// import com.languify.R
+import com.languify.ui.theme.LanguifyTheme // Importa o teu tema para a preview funcionar bem
 
-@OptIn(ExperimentalMaterial3Api::class)
+// Composable "Inteligente" (Stateful)
+// Este conecta-se ao ViewModel e trata da navegação.
 @Composable
-fun ProfileScreen(
+fun ProfileScreenRoute(
     navController: NavController,
     profileViewModel: ProfileViewModel = viewModel()
 ) {
@@ -33,13 +38,45 @@ fun ProfileScreen(
     val currentLanguage by profileViewModel.language.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    // Chama a versão sem estado passando apenas os dados e as ações necessárias
+    StatelessProfileScreen(
+        isDarkMode = isDarkMode,
+        currentLanguage = currentLanguage,
+        onToggleDarkMode = { profileViewModel.toggleDarkMode() },
+        onLanguageSelected = { profileViewModel.setLanguage(it) },
+        onNavigateToTest = { navController.navigate("test_realtime") },
+        onLogout = {
+            coroutineScope.launch {
+                profileViewModel.logout()
+                delay(200)
+                navController.navigate("login") {
+                    popUpTo("home") { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
+    )
+}
+
+// Composable "Burro" (Stateless) - SÓ UI
+// Este recebe dados puros e lambdas. É fácil de testar e pré-visualizar.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StatelessProfileScreen(
+    isDarkMode: Boolean,
+    currentLanguage: String,
+    onToggleDarkMode: () -> Unit,
+    onLanguageSelected: (String) -> Unit,
+    onNavigateToTest: () -> Unit,
+    onLogout: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("My Profile") },
                 actions = {
-                    // 🔘 Alterna entre tema claro/escuro
-                    IconButton(onClick = { profileViewModel.toggleDarkMode() }) {
+                    // Alterna entre tema claro/escuro
+                    IconButton(onClick = onToggleDarkMode) {
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = "Toggle Theme"
@@ -58,8 +95,10 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // 📸 Foto de perfil
+            // Foto de perfil
             Image(
+                // Usei um ícone genérico do sistema para a preview funcionar sem o teu R.drawable
+                // Substitui de volta pelo teu: painterResource(id = R.drawable.ic_profile_placeholder)
                 painter = painterResource(android.R.drawable.ic_menu_myplaces),
                 contentDescription = "Profile picture",
                 modifier = Modifier
@@ -68,7 +107,7 @@ fun ProfileScreen(
                 contentScale = ContentScale.Crop
             )
 
-            // 🧍‍♂️ Dados do utilizador
+            // Dados do utilizador
             Text("Alex Lima", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Text("@alexl", color = MaterialTheme.colorScheme.primary)
             Text("alex@email.com", style = MaterialTheme.typography.bodyMedium)
@@ -78,7 +117,7 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
-            // 🌐 Idioma
+            // Idioma
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -101,7 +140,7 @@ fun ProfileScreen(
                             DropdownMenuItem(
                                 text = { Text(lang) },
                                 onClick = {
-                                    profileViewModel.setLanguage(lang)
+                                    onLanguageSelected(lang)
                                     expanded = false
                                 }
                             )
@@ -110,20 +149,24 @@ fun ProfileScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.weight(1f)) // Empurra tudo para baixo
 
-            // 🚪 Logout
+            // BOTÃO DE TESTE OPENAI (NOVO)
             Button(
-                onClick = {
-                    coroutineScope.launch {
-                        profileViewModel.logout()
-                        delay(200)
-                        navController.navigate("login") {
-                            popUpTo("home") { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
-                },
+                onClick = onNavigateToTest,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error), // Vermelho
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("TESTAR OPENAI REALTIME", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Logout
+            Button(
+                onClick = onLogout,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
@@ -134,75 +177,36 @@ fun ProfileScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, name = "Profile Screen")
+//  As Previews (Agora funcionam de verdade!)
+// Usamos dados "falsos" para ver como a UI se comporta.
+
+@Preview(showBackground = true, name = "Light Mode", group = "UI")
 @Composable
-fun ProfileScreenPreview() {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Profile") },
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Default.LightMode,
-                            contentDescription = "Toggle Theme"
-                        )
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp, vertical = 100.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Image(
-                painter = painterResource(android.R.drawable.ic_menu_myplaces),
-                contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+fun ProfileScreenLightPreview() {
+    // Envolvemos no tema da app para as cores ficarem corretas
+    LanguifyTheme(darkTheme = false) {
+        StatelessProfileScreen(
+            isDarkMode = false,
+            currentLanguage = "English",
+            onToggleDarkMode = {}, // Lambdas vazias para preview
+            onLanguageSelected = {},
+            onNavigateToTest = {},
+            onLogout = {}
+        )
+    }
+}
 
-            Text("Alex Lima", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text("@alexl", color = MaterialTheme.colorScheme.primary)
-            Text("alex@email.com", style = MaterialTheme.typography.bodyMedium)
-
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-            )
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("Language", style = MaterialTheme.typography.bodyLarge)
-
-                OutlinedButton(
-                    onClick = {},
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("English")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Text("Logout", color = Color.White, style = MaterialTheme.typography.labelLarge)
-            }
-        }
+@Preview(showBackground = true, name = "Dark Mode", group = "UI", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ProfileScreenDarkPreview() {
+    LanguifyTheme(darkTheme = true) {
+        StatelessProfileScreen(
+            isDarkMode = true,
+            currentLanguage = "Português",
+            onToggleDarkMode = {},
+            onLanguageSelected = {},
+            onNavigateToTest = {},
+            onLogout = {}
+        )
     }
 }
