@@ -60,7 +60,7 @@ fun LoginScreen(
         ) {
             // título principal
             Text(
-                text = "Welcome Back!",
+                text = "Welcome!",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
@@ -142,7 +142,7 @@ fun LoginScreen(
                                     if (id > 0) {
                                         profileViewModel.fetchUserProfile(id)
                                     } else {
-                                        println("⚠️ User ID ainda não guardado, ignorado.")
+                                        println("User ID ainda não guardado, ignorado.")
                                     }
                                 }
                             }
@@ -188,7 +188,7 @@ fun LoginScreenPreview() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Welcome Back!",
+                text = "Welcome!",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold

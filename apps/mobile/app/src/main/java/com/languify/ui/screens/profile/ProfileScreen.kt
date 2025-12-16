@@ -23,12 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.languify.viewmodel.ProfileViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-// Certifica-te que tens este import para o R (ajusta o pacote se necessário)
-// import com.languify.R
-import com.languify.ui.theme.LanguifyTheme // Importa o teu tema para a preview funcionar bem
-
-// Composable "Inteligente" (Stateful)
-// Este conecta-se ao ViewModel e trata da navegação.
+import com.languify.ui.theme.LanguifyTheme
 @Composable
 fun ProfileScreenRoute(
     navController: NavController,
@@ -73,7 +68,7 @@ fun StatelessProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Profile") },
+                title = { Text("Profile") },
                 actions = {
                     // Alterna entre tema claro/escuro
                     IconButton(onClick = onToggleDarkMode) {
@@ -108,9 +103,9 @@ fun StatelessProfileScreen(
             )
 
             // Dados do utilizador
-            Text("Alex Lima", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text("@alexl", color = MaterialTheme.colorScheme.primary)
-            Text("alex@email.com", style = MaterialTheme.typography.bodyMedium)
+            Text("admin", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("@admin", color = MaterialTheme.colorScheme.primary)
+            Text("admin@email.com", style = MaterialTheme.typography.bodyMedium)
 
             HorizontalDivider(
                 thickness = 1.dp,
@@ -150,17 +145,6 @@ fun StatelessProfileScreen(
             }
 
             Spacer(modifier = Modifier.weight(1f)) // Empurra tudo para baixo
-
-            // BOTÃO DE TESTE OPENAI (NOVO)
-            Button(
-                onClick = onNavigateToTest,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error), // Vermelho
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Text("TESTAR OPENAI REALTIME", color = Color.White)
-            }
 
             Spacer(modifier = Modifier.height(10.dp))
 

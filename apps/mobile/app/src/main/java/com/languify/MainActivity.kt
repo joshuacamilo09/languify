@@ -55,8 +55,6 @@ class MainActivity : ComponentActivity() {
         // Criamos o cliente WebSocket e injetamo-lo no Repositório
         val realtimeClient = RealtimeClient()
         val chatRepository = ChatRepository(AuthController.api, realtimeClient)
-
-        // PreferencesManager (opcional se não usado diretamente)
         val prefs = PreferencesManager(applicationContext)
 
         setContent {
@@ -76,8 +74,6 @@ class MainActivity : ComponentActivity() {
                 registerUseCase = RegisterUseCase(authRepository)
             )
 
-            // C. CHAT (Factory Inline - Resolve o teu problema!)
-            // Como não tens ficheiro Factory, criamos uma aqui mesmo.
             val chatViewModel: ChatViewModel = viewModel(
                 factory = object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -86,7 +82,7 @@ class MainActivity : ComponentActivity() {
                             GetChatsUseCase(chatRepository),
                             SendMessageUseCase(chatRepository),
                             DeleteChatUseCase(chatRepository),
-                            chatRepository // Injeta o repositório com WebSocket
+                            chatRepository
                         ) as T
                     }
                 }
@@ -120,7 +116,7 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         profileViewModel = profileViewModel,
                         authViewModel = authViewModel,
-                        chatViewModel = chatViewModel // Passa o ChatViewModel para o NavGraph
+                        chatViewModel = chatViewModel
                     )
                 }
             }

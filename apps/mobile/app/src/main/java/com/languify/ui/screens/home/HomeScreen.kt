@@ -74,7 +74,7 @@ fun HomeScreen(
                 }
             }
             RecorderState.RECORDING -> homeViewModel.stopRecording()
-            RecorderState.PLAYING -> { /* Opcional */ }
+            RecorderState.PLAYING -> {}
         }
     }
 

@@ -14,7 +14,7 @@ class AuthViewModel(
     private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
-    // CORREÇÃO: Iniciar com Idle (Parado), não Loading
+    // Iniciar com Idle (Parado), não Loading
     private val _loginState = MutableStateFlow<Result<String>>(Result.Idle)
     val loginState: StateFlow<Result<String>> = _loginState
 

@@ -35,7 +35,7 @@ fun TestRealtimeScreen(
     // Permissão de Microfone
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { /* Ignoramos o resultado por agora, assume que deu sim */ }
+    ) { }
 
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -52,12 +52,12 @@ fun TestRealtimeScreen(
                 if (type == "response.audio.delta") {
                     val delta = json.optString("delta")
                     // MOSTRA NO ECRÃ SE CHEGAR ÁUDIO
-                    Toast.makeText(context, "🔊 Áudio recebido!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Áudio recebido!", Toast.LENGTH_SHORT).show()
                     audioManager.playAudioChunk(delta)
                 }
                 else if (type == "response.audio_transcript.done") {
                     val text = json.optString("transcript")
-                    logs = "🤖: $text"
+                    logs = ": $text"
                 }
             } catch (e: Exception) {
                 // ...
@@ -85,7 +85,7 @@ fun TestRealtimeScreen(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = {
-                            // 1. Ao Pressionar: Começar a Gravar
+                            // Ao Pressionar: Começar a Gravar
                             isRecording = true
                             logs = "A Gravar..."
 

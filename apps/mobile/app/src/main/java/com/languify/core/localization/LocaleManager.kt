@@ -11,13 +11,12 @@ object LocaleManager {
     private const val PREFS_NAME = "app_prefs"
     private const val KEY_LANGUAGE = "app_language"
 
-    // Chama isto na MainActivity para aplicar a língua guardada ao iniciar
     fun onAttach(context: Context): Context {
         val lang = getPersistedLanguage(context)
         return setLocale(context, lang)
     }
 
-    // Chama isto quando o user clica num botão para mudar a língua
+
     fun setNewLocale(context: Context, language: String): Context {
         persistLanguage(context, language)
         return setLocale(context, language)
@@ -47,7 +46,7 @@ object LocaleManager {
             config.setLocales(localeList)
             return context.createConfigurationContext(config)
         } else {
-            // Para versões muito antigas do Android
+
             config.setLocale(locale)
             @Suppress("DEPRECATION")
             context.resources.updateConfiguration(config, context.resources.displayMetrics)

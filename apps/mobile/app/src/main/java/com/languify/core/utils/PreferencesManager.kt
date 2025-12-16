@@ -46,11 +46,11 @@ class PreferencesManager(private val context: Context) {
     val isLoggedIn: Flow<Boolean> = context.dataStore.data.map { it[LOGGED_IN_KEY] ?: false }
     val userId: Flow<Long> = context.dataStore.data.map { it[USER_ID_KEY] ?: -1L }
 
-    // 🔹 Métodos diretos (para chamadas imediatas)
+    // Métodos diretos
     suspend fun getToken(): String? = context.dataStore.data.map { it[TOKEN_KEY] }.first()
     suspend fun getUserId(): Long = context.dataStore.data.map { it[USER_ID_KEY] ?: -1L }.first()
 
-    // 🔹 Limpar tudo
+    // Limpar tudo
     suspend fun clearAll() {
         context.dataStore.edit { it.clear() }
     }

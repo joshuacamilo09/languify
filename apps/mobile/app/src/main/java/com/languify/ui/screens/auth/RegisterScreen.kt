@@ -13,7 +13,7 @@ import com.languify.viewmodel.ProfileViewModel
 fun RegisterScreen(
     profileViewModel: ProfileViewModel,
     onBackToLogin: () -> Unit,
-    onSignUpClick: () -> Unit // 👈 ADICIONA ESTE PARÂMETRO
+    onSignUpClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -36,7 +36,6 @@ fun RegisterScreen(
                     return@Button
                 }
 
-                // 👉 Aqui só navegamos, sem chamar o ViewModel por agora
                 onSignUpClick()
             },
             enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()

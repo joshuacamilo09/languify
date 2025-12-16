@@ -32,14 +32,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     var onTextRecognized: ((String) -> Unit)? = null
 
     fun initialize() {
-        // 1. Configurar TextToSpeech (Falar)
+        // Configurar TextToSpeech (Falar)
         textToSpeech = TextToSpeech(getApplication()) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 textToSpeech?.language = Locale.getDefault()
             }
         }
 
-        // 2. Configurar SpeechRecognizer (Ouvir)
+        // Configurar SpeechRecognizer (Ouvir)
         setUpRecognitionListener()
     }
 
@@ -72,10 +72,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     val text = matches[0]
                     _transcribedText.value = text
 
-                    // 1. AVISAR A UI PARA GUARDAR NO HISTÓRICO
+                    //  AVISAR A UI PARA GUARDAR NO HISTÓRICO
                     onTextRecognized?.invoke(text)
 
-                    // 2. FALAR DE VOLTA
+                    //  FALAR DE VOLTA
                     speakText(text)
                 } else {
                     _state.value = RecorderState.READY
@@ -116,7 +116,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _state.value = RecorderState.PLAYING
         textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts_id")
 
-        // Volta ao estado normal visualmente (podes ajustar isto se quiseres esperar que a fala acabe)
+        // Volta ao estado normal visualmente
         _state.value = RecorderState.READY
     }
 

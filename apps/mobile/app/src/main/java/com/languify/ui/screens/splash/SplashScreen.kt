@@ -29,23 +29,23 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController, profileViewModel: ProfileViewModel) {
 
-    // 🔹 Estado para controlar visibilidade do fade-in
+    // Estado para controlar visibilidade do fade-in
     var visible by remember { mutableStateOf(false) }
 
-    // 🔹 Animação de transparência (alpha)
+    // Animação de transparência (alpha)
     val alpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
         animationSpec = tween(durationMillis = 1200), // duração mais suave
         label = "fade-in"
     )
 
-    // 🔹 Efeito colateral — inicia animação e navegação
+    // Efeito colateral, inicia animação e navegação
     LaunchedEffect(Unit) {
         visible = true
         delay(2000) // tempo total do splash
         val isLoggedIn = profileViewModel.isLoggedIn.value
 
-        // ✅ Se logado → Home / Senão → Login
+        // Se logado → Home / Senão → Login
         if (isLoggedIn) {
             navController.navigate("home") {
                 popUpTo("splash") { inclusive = true } // remove splash da pilha
@@ -57,7 +57,7 @@ fun SplashScreen(navController: NavController, profileViewModel: ProfileViewMode
         }
     }
 
-    // 🔹 Interface da Splash
+    // Interface da Splash
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -72,9 +72,9 @@ fun SplashScreen(navController: NavController, profileViewModel: ProfileViewMode
             AnimatedVisibility(visible = true) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    // 🟣 Logotipo (usa o teu logo principal)
+                    // Logotipo (usa o teu logo principal)
                     Image(
-                        painter = painterResource(id = R.drawable.languify_logo), // substitui pelo teu ficheiro real
+                        painter = painterResource(id = R.drawable.languify_logo),
                         contentDescription = "App logo",
                         modifier = Modifier
                             .size(140.dp)
@@ -83,7 +83,7 @@ fun SplashScreen(navController: NavController, profileViewModel: ProfileViewMode
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 🟣 Nome da app
+                    // Nome da app
                     Text(
                         text = "Languify",
                         fontSize = 30.sp,

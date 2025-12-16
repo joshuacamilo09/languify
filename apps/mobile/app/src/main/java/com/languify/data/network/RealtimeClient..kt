@@ -19,20 +19,20 @@ class RealtimeClient {
         val listener = object : WebSocketListener() {
 
             override fun onOpen(ws: WebSocket, response: Response) {
-                Log.d("Realtime", "✅ Conectado ao backend")
+                Log.d("Realtime", "Conectado ao backend")
             }
 
             override fun onMessage(ws: WebSocket, text: String) {
-                Log.d("RealtimeSpy", "📩 TEXTO (${text.length})")
+                Log.d("RealtimeSpy", "TEXTO (${text.length})")
                 onMessageReceived?.invoke(text)
             }
 
             override fun onMessage(ws: WebSocket, bytes: ByteString) {
-                Log.d("RealtimeSpy", "📩 BINÁRIO (${bytes.size})")
+                Log.d("RealtimeSpy", "BINÁRIO (${bytes.size})")
             }
 
             override fun onFailure(ws: WebSocket, t: Throwable, response: Response?) {
-                Log.e("Realtime", "❌ Erro: ${t.message}")
+                Log.e("Realtime", "Erro: ${t.message}")
             }
         }
 
