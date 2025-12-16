@@ -8,7 +8,7 @@ import retrofit2.http.*
 
 object AuthController {
 
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    private const val BASE_URL = "http://172.20.10.3:8080/"
 
     val api: ApiService by lazy {
         Retrofit.Builder()
