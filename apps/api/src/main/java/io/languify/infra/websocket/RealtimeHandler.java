@@ -47,7 +47,6 @@ public class RealtimeHandler extends TextWebSocketHandler {
     private void connectToOpenAI(WebSocketSession userSession) {
         StandardWebSocketClient client = new StandardWebSocketClient();
 
-        // ✅ MODELO CORRETO (ATUAL)
         String url =
                 "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2025-06-03";
 
@@ -60,7 +59,7 @@ public class RealtimeHandler extends TextWebSocketHandler {
             @Override
             public void afterConnectionEstablished(WebSocketSession openAISession) {
                 try {
-                    // ✅ SESSION UPDATE (OBRIGATÓRIO)
+
                     String sessionUpdate = """
                     {
                       "type": "session.update",
@@ -75,7 +74,7 @@ public class RealtimeHandler extends TextWebSocketHandler {
 
                     openAISession.sendMessage(new TextMessage(sessionUpdate));
 
-                    // 🔊 Mensagem inicial (teste de áudio)
+
                     String hello = """
                     {
                       "type": "response.create",

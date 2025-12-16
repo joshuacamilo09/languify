@@ -29,7 +29,7 @@ public class SecurityConfig {
                                                 "/auth/register",
                                                 "/auth/sign/google",
                                                 "/auth/login",
-                                                "/ws/**" //ADICIONADO: Liberta todos os WebSockets (Chat e Realtime)
+                                                "/ws/**"
                                         ).permitAll()
                                         .anyRequest().authenticated())
                 .sessionManagement(
