@@ -59,8 +59,7 @@ fun NavGraph(
 
         // No teu NavGraph.kt
         composable("profile") {
-            // ProfileScreen( ... )  <- ANTIGO
-            ProfileScreenRoute( // <- NOVO
+            ProfileScreenRoute(
                 navController = navController,
                 profileViewModel = profileViewModel
             )
